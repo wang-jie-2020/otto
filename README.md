@@ -1,6 +1,8 @@
 ﻿# npx Skills Repo (Version-Controlled)
 
-This repository is a minimal, reproducible setup for skills development and distribution using `npx`/`npm exec`.
+This repository is a minimal, reproducible setup for:
+- executable skill tools using `npx`/`npm exec`
+- agent skills consumable via `npx skills add ... --skill ...`
 
 ## Goals
 - Pin tool versions (no `latest` drift)
@@ -18,6 +20,31 @@ This repository is a minimal, reproducible setup for skills development and dist
 1. `npm ci`
 2. `npm run doctor`
 3. `npm run skill:hello:local`
+
+## Install This Repo As Agent Skills (`npx skills add`)
+If you want a Vercel-style skills workflow:
+
+```powershell
+npx --yes skills add . --skill hello-skill-tool
+```
+
+List discoverable skills first:
+
+```powershell
+npx --yes skills add . --list
+```
+
+From any other directory, you can point at this repo path:
+
+```powershell
+npx --yes skills add D:\Code\what-i-do\otto --skill hello-skill-tool
+```
+
+Remote repo install pattern:
+
+```powershell
+npx --yes skills add <owner>/<repo> --skill <name>
+```
 
 ## Pinned npx Invocation Pattern
 Use explicit versions:
