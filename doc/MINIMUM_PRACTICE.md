@@ -3,6 +3,7 @@
 ## 1) Directory Baseline
 - `doc/PRD.md`
 - `doc/MINIMUM_PRACTICE.md`
+- `doc/RELEASE.md`
 - `skills/`
 - `scripts/doctor.mjs`
 - `package.json`
@@ -30,3 +31,4 @@
 ## 5) Rollback Strategy
 - Revert version bump commit OR switch consumers back to previous stable tag/version.
 - Re-run `npm ci` and `npm run doctor` after rollback.
+- Follow detailed SOP in `doc/RELEASE.md`.
