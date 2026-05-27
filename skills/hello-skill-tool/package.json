@@ -1,0 +1,13 @@
+{
+  "name": "otto-hello-skill-tool",
+  "version": "0.1.0",
+  "description": "Minimal executable skill example for pinned npx workflow",
+  "type": "module",
+  "bin": {
+    "otto-hello": "bin/otto-hello.js"
+  },
+  "engines": {
+    "node": "22.x",
+    "npm": "10.x"
+  }
+}

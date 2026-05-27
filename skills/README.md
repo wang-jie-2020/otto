@@ -6,3 +6,6 @@ Recommended approach:
 - Keep each skill in its own folder.
 - Version changes are tracked via Git tags and changelog.
 - Consumers invoke the skill tool via pinned `npx package@version`.
+
+Included example:
+- `skills/hello-skill-tool`: Minimal executable package with `otto-hello` command.
