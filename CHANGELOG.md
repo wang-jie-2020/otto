@@ -3,6 +3,8 @@
 All notable changes to this repository should be documented in this file.
 
 ## [Unreleased]
+
+## [0.1.1] - 2026-05-27
 - Add first executable sample skill package: `skills/hello-skill-tool`.
 - Add local smoke command: `npm run skill:hello:local`.
 - Add release/upgrade/rollback SOP: `doc/RELEASE.md`.
