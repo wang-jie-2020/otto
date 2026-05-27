@@ -1,22 +1,22 @@
 ---
 name: hello-skill-tool
-description: Reusable helper for pinned npx workflows and simple repository smoke checks.
+description: Reusable helper for pinned npx skills-add workflows and repository baseline checks.
 user-invocable: true
 ---
 
 # Hello Skill Tool
 
-Use this skill when you need a quick, standardized check that a repository is following
-a pinned `npx` workflow and can run the sample hello command.
+Use this skill when you need a quick, standardized check that a repository
+follows a pinned `npx skills add` workflow.
 
 ## What this skill does
 
 1. Verifies repository policy checks with `npm run doctor`.
-2. Runs local smoke command `npm run skill:hello:local` when available.
-3. Summarizes whether pinned execution and baseline workflow are healthy.
+2. Lists discoverable skills with `npx --yes skills add . --list`.
+3. Summarizes whether the skills-add baseline workflow is healthy.
 
 ## Operating notes
 
-- If `npm` dependencies are missing, run `npm ci` first.
+- If dependencies are missing, run `npm ci` first.
 - Keep output concise: include pass/fail plus next action.
-- Do not suggest unpinned `npx <package>` usage for CI/production workflows.
+- Prefer pinned `skills` CLI versions in CI.

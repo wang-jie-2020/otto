@@ -15,14 +15,13 @@
 - Policy check: `npm run doctor`
 - Skill discovery check: `npx --yes skills add . --list`
 - Skill install pattern: `npx --yes skills add <repo-or-path> --skill <name>`
-- Executable tool pattern: `npx --yes <tool-package>@<x.y.z> <args>`
 
 ## 3) Version Strategy
 - Pin package manager in `package.json#packageManager`.
 - Require exact dependency versions via `.npmrc: save-exact=true`.
 - Keep each `skills/<name>/SKILL.md` with YAML frontmatter (`name`, `description`).
 - Prefer pinning skills CLI in automation/CI: `npx --yes skills@<x.y.z> ...`.
-- Never use unversioned `npx <package>` in CI/production.
+- Avoid unversioned tool invocation in CI/production.
 
 ## 4) Upgrade Strategy (Controlled)
 - Upgrade only through PR.

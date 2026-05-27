@@ -1,18 +1,17 @@
-# PRD：基于 `npx` 的 Skills 开发与分发体系（`npx skills add` + `npm exec`，非 Marketplace）
+# PRD：基于 `npx skills add` 的 Skills 开发与分发体系（非 Marketplace）
 
 ## 1. 文档信息
-- 文档版本：`v1.1`
+- 文档版本：`v1.2`
 - 状态：`Implemented Baseline`
 - 日期：`2026-05-27`
 - 适用范围：单 Git 仓库内的 Skills 开发、测试、安装、升级与分发
 
 ## 2. 背景与问题
-当前目标是用 `npx` 作为技能入口，不依赖 ClaudeCode/Codex marketplace 兼容机制。  
+目标是基于 `npx skills add` 构建技能仓库，不依赖 ClaudeCode/Codex marketplace 兼容机制。  
 核心诉求是把“开发与分发”收敛到一个 Git 仓库，并确保版本行为可控，避免自动漂移导致环境不可复现。
 
-当前实现覆盖两条消费路径：
+当前消费路径：
 1. Agent 技能安装：`npx skills add <repo-or-path> --skill <name>`
-2. 可执行工具调用：`npm exec --package=...` 或 `npx <tool>@<x.y.z>`
 
 当前痛点：
 1. 工具版本可能随 `latest` 漂移。  
@@ -25,8 +24,7 @@
 2. 安装流程可重复，任意环境可复现。  
 3. 升级流程可控，通过 PR 审核后再升级。  
 4. 在一个 Git 仓库内完成开发、测试、发布与消费。  
-5. 同时支持 `npx skills add` 与 `npm exec/npx package@version` 两种消费模式。  
-6. 提供最小可执行实践：目录规范、命令规范、版本策略。
+5. 提供最小可执行实践：目录规范、命令规范、版本策略。
 
 ## 4. 非目标（Non-Goals）
 1. 不建设 marketplace 兼容层。  
@@ -45,18 +43,16 @@
 3. 维护者按计划升级依赖/工具版本并可回滚。
 
 ## 6. 约束与前提
-1. 必须支持以下模式：  
-   - Agent 技能安装：`npx skills add <repo-or-path> --skill <name>`  
-   - 可执行工具调用：`npx/npm exec`  
-2. 必须保留 lockfile 并通过 `npm ci` 保证复现。  
-3. 所有版本升级通过 Git PR 审核。  
-4. 仓库可在本地与 CI 环境一致执行。  
-5. 实施仓库即当前目录，所有初始化与后续执行均在本仓库内完成。
+1. 必须支持 Agent 技能安装：`npx skills add <repo-or-path> --skill <name>`。  
+2. 每个技能目录必须包含 `SKILL.md`（含最小 frontmatter：`name`、`description`）。  
+3. 必须保留 lockfile 并通过 `npm ci` 保证复现。  
+4. 所有版本升级通过 Git PR 审核。  
+5. 仓库可在本地与 CI 环境一致执行。
 
 ## 7. MVP 范围
 1. 单仓库目录规范。  
 2. `package.json` + lockfile 的版本固定策略。  
-3. 标准命令：安装、开发、验证、发布（含 `skills add` discover/install 验证）。  
+3. 标准命令：安装、验证、发布（含 `skills add` discover/install 验证）。  
 4. 升级机制：人工或机器人提 PR，人工合并。  
 5. 发布机制：语义化版本 + Git tag + 变更记录。  
 6. 回滚机制：回退 tag 或回退到指定 commit/version。
@@ -64,13 +60,12 @@
 ## 8. 需求明细（Functional Requirements）
 
 ### FR-1 目录结构标准化
-- 仓库需定义固定目录，例如：技能源码、脚本、文档、示例配置、变更记录。
+- 仓库需定义固定目录，例如：技能源码、脚本、文档、变更记录。
 - 目录和命令映射必须在 README 中可一眼定位。
 - 每个技能目录需包含 `SKILL.md`，并带最小 frontmatter（至少 `name`、`description`）。
 
 ### FR-2 工具版本固定
 - 所有 CLI 依赖使用明确版本号（禁止裸 `latest`）。
-- `npx` 执行必须支持显式版本调用（`pkg@x.y.z`）。
 - `skills` CLI 建议固定版本（例如 `npx --yes skills@<x.y.z> add ...`）。
 - 团队可选固定包管理器版本（`packageManager` 字段）以减少环境差异。
 
@@ -82,11 +77,9 @@
 ### FR-4 可控升级
 - 升级只通过 PR 进入主分支。
 - 升级 PR 必须包含：版本变更说明、影响范围、回滚方案。
-- 支持分通道发布（如 stable/beta）但默认消费 stable。
 
 ### FR-5 单仓库开发与分发
-- 同一仓库完成：开发、测试、打包、发布、消费文档。
-- 支持从 npm 包版本或 Git tag/commit 精确消费。
+- 同一仓库完成：开发、测试、发布、消费文档。
 - 支持从本地路径或远程仓库通过 `npx skills add` 选择性安装技能（`--skill`）。
 - 消费方式必须在文档中给出“一键可执行”示例。
 
@@ -110,11 +103,10 @@
 
 ## 11. 验收标准（Acceptance Criteria）
 1. 给定任意新环境，当执行标准安装命令时，应得到与 lockfile 一致的依赖结果。  
-2. 给定固定版本调用，当执行 `npx` 命令时，不应拉取到非目标版本。  
-3. 给定仓库路径，当执行 `npx skills add <path> --list` 时，应能发现技能清单。  
-4. 给定升级 PR，当未合并前，主分支不应发生版本变化。  
-5. 给定发布版本，当出现问题时，可按文档回退到上一个稳定版本。  
-6. 给定仓库 README，新成员可独立完成安装与首次运行。
+2. 给定仓库路径，当执行 `npx skills add <path> --list` 时，应能发现技能清单。  
+3. 给定升级 PR，当未合并前，主分支不应发生版本变化。  
+4. 给定发布版本，当出现问题时，可按文档回退到上一个稳定版本。  
+5. 给定仓库 README，新成员可独立完成安装与首次运行。
 
 ## 12. 里程碑（Milestones）
 1. `P0`：仓库初始化与目录落位。  
@@ -127,16 +119,13 @@
 应对：CI 增加版本校验规则，阻止合并。  
 2. 风险：本地环境 Node/npm 版本差异导致行为不一致。  
 应对：约束 Node 版本范围并在仓库声明统一包管理器策略。  
-3. 风险：升级过快引入不兼容。  
-应对：设定固定升级窗口与灰度通道（beta/stable）。  
-4. 风险：回滚文档缺失，线上恢复慢。  
+3. 风险：回滚文档缺失，线上恢复慢。  
 应对：把回滚步骤纳入发布 checklist。  
-5. 风险：技能目录缺少标准 `SKILL.md` 导致无法被 `skills add` 发现。  
+4. 风险：技能目录缺少标准 `SKILL.md` 导致无法被 `skills add` 发现。  
 应对：`npm run doctor` 增加结构与 frontmatter 校验。
 
 ## 14. 待确认决策（Open Decisions）
 1. `skills` CLI 是否在 CI 中强制固定为 `skills@x.y.z`。  
 2. 升级频率：每周、双周或按需。  
-3. 发布通道：仅 stable，还是 stable + beta。  
-4. 是否启用 Dependabot/Renovate 自动提 PR。  
-5. 是否要求每次发布附带变更日志模板。
+3. 是否启用 Dependabot/Renovate 自动提 PR。  
+4. 是否要求每次发布附带变更日志模板。

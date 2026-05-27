@@ -11,7 +11,6 @@
   },
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
-    "check": "npm run doctor",
-    "skill:hello:local": "npm exec --yes --package=./skills/hello-skill-tool -- otto-hello --topic version-control --who team"
+    "check": "npm run doctor"
   }
 }
