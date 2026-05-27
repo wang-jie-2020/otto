@@ -12,8 +12,10 @@ All actions are PR-based and version-controlled.
 - Working branch is up to date with `main`.
 - `npm ci` passes.
 - `npm run doctor` passes.
-- Local skill command check passes:
+- Local executable skill check passes:
   - `npm run skill:hello:local`
+- Agent skill discovery check passes:
+  - `npx --yes skills add . --list`
 
 ## 3) Release Process
 1. Prepare changes on a feature branch.
@@ -24,8 +26,9 @@ All actions are PR-based and version-controlled.
    - rollback plan
 4. Merge PR after review and CI green.
 5. Create and push a Git tag for the release version.
-6. Announce pinned consumer command:
-   - `npx --yes <tool>@<x.y.z> <args>`
+6. Announce consumer commands for both modes:
+   - Agent skill install: `npx --yes skills add <repo-or-path> --skill <name>`
+   - Executable tool run: `npx --yes <tool>@<x.y.z> <args>`
 
 ## 4) Upgrade Process (Controlled)
 1. Create a dedicated upgrade branch.
@@ -33,6 +36,7 @@ All actions are PR-based and version-controlled.
 3. Run:
    - `npm ci`
    - `npm run doctor`
+   - `npx --yes skills add . --list`
    - skill smoke checks
 4. Open PR including:
    - old version -> new version
@@ -46,13 +50,16 @@ All actions are PR-based and version-controlled.
 3. Run:
    - `npm ci`
    - `npm run doctor`
+   - `npx --yes skills add . --list`
    - local skill smoke checks
 4. Open emergency rollback PR.
 5. Merge and retag/reannounce if needed.
 
 ## 6) Checklist
 - [ ] No unpinned `npx <package>` usage in CI/prod paths.
+- [ ] `skills/*/SKILL.md` present with valid frontmatter.
 - [ ] Lockfile present and committed.
 - [ ] `doctor` check passing.
+- [ ] `skills add --list` check passing.
 - [ ] Changelog updated.
 - [ ] Rollback plan included in PR.

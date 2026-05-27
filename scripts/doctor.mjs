@@ -1,4 +1,4 @@
-﻿import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
 
 const errors = [];
 
@@ -16,9 +16,30 @@ if (!npmrc.includes("save-exact=true")) {
   errors.push(".npmrc must include: save-exact=true");
 }
 
+if (existsSync("skills")) {
+  const skillDirs = readdirSync("skills", { withFileTypes: true }).filter((entry) => entry.isDirectory());
+  for (const skillDir of skillDirs) {
+    const skillMdPath = `skills/${skillDir.name}/SKILL.md`;
+    if (!existsSync(skillMdPath)) {
+      errors.push(`Missing ${skillMdPath}. Required for npx skills add compatibility.`);
+      continue;
+    }
+    const skillMd = readFileSync(skillMdPath, "utf8");
+    if (!skillMd.startsWith("---")) {
+      errors.push(`${skillMdPath} must start with YAML frontmatter.`);
+    }
+    if (!/^name:\s*.+$/m.test(skillMd)) {
+      errors.push(`${skillMdPath} frontmatter must include a name field.`);
+    }
+    if (!/^description:\s*.+$/m.test(skillMd)) {
+      errors.push(`${skillMdPath} frontmatter must include a description field.`);
+    }
+  }
+}
+
 if (errors.length > 0) {
   console.error("[doctor] policy check failed:\n- " + errors.join("\n- "));
   process.exit(1);
 }
 
-console.log("[doctor] OK: lockfile + pinned package manager + save-exact policy present");
+console.log("[doctor] OK: lockfile + pinned package manager + save-exact + SKILL.md policy present");

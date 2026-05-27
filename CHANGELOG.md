@@ -3,6 +3,9 @@
 All notable changes to this repository should be documented in this file.
 
 ## [Unreleased]
+- Add `SKILL.md`-based skill metadata for `npx skills add ... --skill ...` compatibility.
+- Update docs with `npx skills add` usage and local-path examples.
+- Extend `scripts/doctor.mjs` to validate `skills/*/SKILL.md` frontmatter.
 
 ## [0.1.1] - 2026-05-27
 - Add first executable sample skill package: `skills/hello-skill-tool`.

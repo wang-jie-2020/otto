@@ -1,4 +1,4 @@
-﻿# Minimum Practice (Executable)
+# Minimum Practice (Executable)
 
 ## 1) Directory Baseline
 - `doc/PRD.md`
@@ -13,11 +13,15 @@
 ## 2) Mandatory Command Set
 - Install (reproducible): `npm ci`
 - Policy check: `npm run doctor`
-- Pinned execution pattern: `npx --yes <tool-package>@<x.y.z> <args>`
+- Skill discovery check: `npx --yes skills add . --list`
+- Skill install pattern: `npx --yes skills add <repo-or-path> --skill <name>`
+- Executable tool pattern: `npx --yes <tool-package>@<x.y.z> <args>`
 
 ## 3) Version Strategy
 - Pin package manager in `package.json#packageManager`.
 - Require exact dependency versions via `.npmrc: save-exact=true`.
+- Keep each `skills/<name>/SKILL.md` with YAML frontmatter (`name`, `description`).
+- Prefer pinning skills CLI in automation/CI: `npx --yes skills@<x.y.z> ...`.
 - Never use unversioned `npx <package>` in CI/production.
 
 ## 4) Upgrade Strategy (Controlled)
@@ -31,4 +35,5 @@
 ## 5) Rollback Strategy
 - Revert version bump commit OR switch consumers back to previous stable tag/version.
 - Re-run `npm ci` and `npm run doctor` after rollback.
+- Re-run `npx --yes skills add . --list` to confirm skills are discoverable.
 - Follow detailed SOP in `doc/RELEASE.md`.
