@@ -42,4 +42,5 @@ Remote repo install pattern:
 
 ```powershell
 npx --yes skills add <owner>/<repo> --skill <name>
+npx --yes skills@1.5.7 add wang-jie-2020/otto --skill article-writing
 ```
