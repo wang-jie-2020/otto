@@ -36,3 +36,8 @@
 - Re-run `npm ci` and `npm run doctor` after rollback.
 - Re-run `npx --yes skills add . --list` to confirm skills are discoverable.
 - Follow detailed SOP in `doc/RELEASE.md`.
+
+## 6) Personal Experiment Rule
+- For personal skill writing and testing, scope changes to one skill folder (for example `skills/article-writing/`).
+- Do not require repository-wide alignment during experiments.
+- Only expand change scope beyond the target skill folder when preparing a release/PR that needs shared docs or policy updates.

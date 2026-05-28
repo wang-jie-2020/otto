@@ -7,6 +7,7 @@ Recommended approach:
 - Add `SKILL.md` in every skill folder for `npx skills add` compatibility.
 - Use YAML frontmatter in `SKILL.md` with at least `name` and `description`.
 - Track version changes via Git tags and changelog.
+- During personal development/experiments, focus only on one skill folder and avoid unrelated cross-repo refactors.
 
 Consumer path:
 - Install as agent skills:

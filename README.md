@@ -19,6 +19,11 @@ This repository is a minimal, reproducible setup for agent skills consumable via
 2. `npm run doctor`
 3. `npx --yes skills add . --list`
 
+## Personal Skill Development Rule
+- For personal skill authoring and experiments, work inside one target skill folder only (for example `skills/article-writing/`).
+- Do not couple the implementation to repository-wide changes unless explicitly needed for publishing or validation.
+- Keep edits scoped to files under the target skill folder whenever possible.
+
 ## Install This Repo As Agent Skills (`npx skills add`)
 Install from current directory:
 
