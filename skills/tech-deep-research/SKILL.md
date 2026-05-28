@@ -143,6 +143,37 @@ description: 面向技术编程问题的多源深度研究流程。结合 AI 搜
 - 深读来源：...
 ```
 
+### 8) 本地存储归档（默认开启）
+
+每次研究结束后，将结果保存到本地目录，保证可追溯与可复核。
+
+建议目录结构：
+
+```text
+research/
+  YYYY-MM-DD-topic-slug/
+    report.md
+    evidence-matrix.md
+    conclusions.json
+    confidence-sources.json
+    key-data.csv
+    meta.json
+```
+
+三个必须落盘的数据对象：
+
+1. 结论（`conclusions.json`）
+   - 记录最终结论、适用边界、结论等级（verified/disputed/unverified）
+   - 必须关联 `claim_id` 与来源 `source_id`
+2. 信心来源（`confidence-sources.json`）
+   - 记录每条结论的证据来源、来源类型、独立性、质量等级与时间
+   - 明确“为何有这个信心分”
+3. 关键数据（`key-data.csv`）
+   - 记录调查中用于支撑判断的关键指标、数值、单位、时间、来源
+   - 不允许只有结论没有数据上下文
+
+`meta.json` 建议包含：研究主题、子问题、检索词、查询时间、研究人、工具链、版本范围。
+
 ## 不确定时的确认规则
 
 满足任一条件时，先向用户发起简短确认（1-2 问）：
@@ -163,6 +194,7 @@ description: 面向技术编程问题的多源深度研究流程。结合 AI 搜
 - 与产品相关结论已完成官网/官方仓库复核
 - 明确区分事实、推断、预测
 - 不包含“无来源断言”
+- 本地已落盘 `conclusions.json`、`confidence-sources.json`、`key-data.csv`
 
 ## 快速触发示例
 
@@ -174,3 +206,6 @@ description: 面向技术编程问题的多源深度研究流程。结合 AI 搜
 
 证据矩阵与去重模板见：
 `references/evidence-matrix.md`
+
+本地存储规范与字段模板见：
+`references/local-storage-spec.md`
