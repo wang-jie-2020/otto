@@ -1,5 +1,5 @@
 ---
-name: tech-deep-research
+name: otto-research-skill
 description: 面向技术编程问题的多源深度研究流程。结合 AI 搜索、网页搜索与官方来源核验，重点解决信息重复、过时和编造问题，并输出带引用的可执行结论。
 ---
 
@@ -24,11 +24,40 @@ description: 面向技术编程问题的多源深度研究流程。结合 AI 搜
 
 ## 工具优先级
 
-- 多源搜索：`firecrawl_search` / `web_search_exa` / `web_search_advanced_exa`
-- 深度抓取：`firecrawl_scrape` / `crawling_exa`
-- 官方核验：产品官网文档、官方 GitHub/GitLab 仓库、Release/Changelog、官方公告
+按网络可达性分层，优先使用当前环境可用的最高层。
 
-至少使用一类搜索 MCP。若两类都可用，优先组合使用。
+**Tier 1 — 境内优先**
+- 搜索：Codex 内置 `web_search`、Bing API
+- 抓取/浏览：Browser 插件（直接打开目标页面、截图、提取文本）
+- 官方核验：GitHub（直连）、`web.archive.org`（存档快照）
+
+**Tier 2 — 境外备选（仅网络可达时使用）**
+- 搜索：`web_search_exa` / `web_search_advanced_exa`
+- 抓取：`firecrawl_search` / `firecrawl_scrape` / `crawling_exa`
+
+**Tier 3 — 纯本地降级**
+- 基于本地知识 + 用户输入
+- Browser 逐页手动抓取
+- 跳过确认不可达的外部源
+
+网络可达性自检后（见下文），根据 `network_tier` 自动选取对应层级工具。若高层工具不可用，向前一层降级。
+
+## 网络可达性自检（工作流前置）
+
+在拆分研究子问题前，先判断当前网络环境：
+
+```bash
+curl -s --connect-timeout 5 -o /dev/null -w "%{http_code}" https://www.google.com
+curl -s --connect-timeout 5 -o /dev/null -w "%{http_code}" https://api.firecrawl.dev
+curl -s --connect-timeout 5 -o /dev/null -w "%{http_code}" https://github.com
+```
+
+判定规则：
+- 三者全通 → `network_tier: direct`（全功能）
+- 仅 GitHub 通 → `network_tier: restricted`（受限，启用降级策略）
+- 全不通 → `network_tier: highly-restricted`（高度受限，纯本地模式）
+
+将结果写入 `meta.json` 的 `network_tier` 字段，并据此选择工具层和证据标准。
 
 ## 工作流程
 
@@ -84,6 +113,11 @@ description: 面向技术编程问题的多源深度研究流程。结合 AI 搜
 3. 一线媒体与资深技术媒体
 4. 社区博客、论坛、问答
 
+**境内受限时的补充来源**（`network_tier = restricted` 或 `highly-restricted`）：
+- 国内技术社区：掘金、SegmentFault、知乎技术板块（Tier 4 补充，不用于关键结论主证）
+- 镜像站：npm 淘宝镜像、PyPI 清华镜像（版本和包信息核验）
+- GitHub 直连（通常可达，间歇不可用按超时重试 2 次处理）
+
 ### 5) 深读关键来源（3-5 个）
 
 针对最关键结论，完整阅读原文而非仅看摘要：
@@ -113,6 +147,7 @@ description: 面向技术编程问题的多源深度研究流程。结合 AI 搜
 ```markdown
 # [主题] 研究报告
 *生成日期：[YYYY-MM-DD] | 来源数量：[N] | 已验证结论：[K] | 置信度：[高/中/低]*
+*网络环境：[直接访问 / 受限访问 / 高度受限] | 降级策略：[无 / 单源放宽 / 官方未核验]*
 
 ## 执行摘要
 - [关键结论 1]（含来源）
@@ -190,10 +225,11 @@ research/
 ## 质量门禁（交付前必须通过）
 
 - 每条关键结论都有可点击来源
-- 关键结论至少有 2 个独立证据，或明确标注“单源未验证”
+- 关键结论至少有 2 个独立证据，或明确标注“单源未验证”；`network_tier = restricted` 时放宽为至少 1 个官方来源 + 1 个社区/镜像来源，若均不可达则至少 1 个官方来源并标注“受网络限制”
 - 与产品相关结论已完成官网/官方仓库复核
 - 明确区分事实、推断、预测
 - 不包含“无来源断言”
+- `network_tier = highly-restricted` 时，报告必须明确声明网络受限程度及降级策略
 - 本地已落盘 `conclusions.json`、`confidence-sources.json`、`key-data.csv`
 
 ## 快速触发示例
@@ -201,6 +237,7 @@ research/
 - “研究 2026 年 Rust vs Go 在后端服务的真实差异，给出可落地建议。”
 - “调查 AI 代码编辑器竞争格局，重点看企业可用性与安全性。”
 - “评估从 Next.js 迁移到 Remix 的成本和风险，按我的团队约束给建议。”
+- “研究 2026 年国内可用的 Kubernetes 多集群管理方案，给出中小企业落地建议。”
 
 ## 参考模板
 

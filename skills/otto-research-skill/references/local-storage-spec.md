@@ -50,6 +50,7 @@ Required files:
       "title": "string",
       "url": "https://...",
       "source_type": "official-doc|official-repo|paper|media|blog|forum",
+      "source_region": "cn-accessible|overseas-only|unknown",
       "published_at": "YYYY-MM-DD",
       "independence_group": "official|vendor|community|media|academic",
       "quality_tier": 1,
@@ -89,9 +90,11 @@ D1,p95 latency,38,ms,baseline test on 4c8g,2026-05,S2,C3,from official benchmark
   "objective": "learn|decision|writing",
   "sub_questions": ["..."],
   "search_queries": ["..."],
-  "tools_used": ["firecrawl", "exa"],
+  "tools_used": ["web_search", "browser", "firecrawl", "exa"],
   "time_range": "last 12 months",
-  "environment": "language/framework/runtime versions"
+  "environment": "language/framework/runtime versions",
+  "network_tier": "direct|restricted|highly-restricted",
+  "degradation_strategy": "none|source-relaxed|official-unverified|local-only"
 }
 ```
 
