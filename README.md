@@ -2,6 +2,10 @@
 
 Personal skills repo, installable via `npx skills add`.
 
+## Conventions
+
+- Skill folder naming: `otto-<domain>-<capability>` (e.g. `otto-article-writing`)
+
 ## Install
 
 ```bash
