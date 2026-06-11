@@ -50,3 +50,9 @@ npx skills add https://github.com/anthropics/skills --skill pptx
 npx hyperframes preview # 预览
 npx hyperframes render # MP4
 ```
+
+## 微信 进一步参考文颜： https://github.com/caol64/wenyan
+https://github.com/pengcong2020520/generate-wechat-theme-skill.git
+
+## garden-skills
+https://github.com/ConardLi/garden-skills.git
