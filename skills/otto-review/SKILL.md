@@ -1,5 +1,5 @@
 ---
-name: otto-review-goal
+name: otto-review
 description: 当用户提及“审核”“审查”“检查”等指令时，以理智、客观、中立的态度，评价计划是否偏离目标，或目标成果与当前成果之间是否存在偏离。
 ---
 
