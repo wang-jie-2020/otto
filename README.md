@@ -14,5 +14,7 @@
 7. https://github.com/ConardLi/garden-skills.git
 8. https://github.com/mattpocock/skills
 
-## 微信 进一步参考文颜： https://github.com/caol64/wenyan
+## 微信
+ 
+- https://github.com/caol64/wenyan
 - https://github.com/pengcong2020520/generate-wechat-theme-skill.git
