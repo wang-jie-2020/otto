@@ -13,6 +13,9 @@
 6. hyperframes & gsap
 7. https://github.com/ConardLi/garden-skills.git
 8. https://github.com/mattpocock/skills
+9. https://github.com/Leonxlnx/taste-skill
+10. https://github.com/pbakaus/impeccable
+11. https://github.com/addyosmani/agent-skills
 
 ## 微信
  
