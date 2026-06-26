@@ -5,7 +5,7 @@ description: >-
   五个可调参数：生成数量、炫酷程度、简洁程度、配色方案、目标受众，精准控制输出风格。
   触发词：画图、mermaid、图解、可视化、示意图、流程图、思维导图、文本图解、文章图解、把这段话画出来。
   工作流：模式选择 → 参数配置 → 输入处理 → 概念提取 → 方案确认（ASCII预览）→ Mermaid生成 → 输出验证。
-  输出到 output/{topic}/diagrams/。
+  输出到 ./diagrams/，命名遵循 <markdown_file>_<num>_<type>_<title>.md。
   确保在任何涉及可视化、图表、图解、流程图、思维导图的场景中使用此 skill，即使用户没有明确说"Mermaid"。
 disable-model-invocation: true
 license: MIT
@@ -294,7 +294,7 @@ B. 文本模式 — 你给我一篇文章/一段文字，我分析完画图
 
 ### 输出位置
 
-`output/{topic}/diagrams/diagrams.md`
+`./diagrams/<markdown_file>_<num>_<type>_<title>.md`
 
 使用 `assets/output-template.md` 作为模板。参数信息写入文件头部的 HTML 注释。
 
@@ -316,7 +316,7 @@ B. 文本模式 — 你给我一篇文章/一段文字，我分析完画图
 ### 输出确认
 
 ```
-搞定！{n}张图解已经生成到 output/{topic}/diagrams/diagrams.md
+搞定！{n}张图解已经生成到 ./diagrams/<markdown_file>_<num>_<type>_<title>.md
 
 参数回顾：
 - 模式：{调研/文本}
