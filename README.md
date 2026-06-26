@@ -24,3 +24,7 @@
 3. https://github.com/zarazhangrui/frontend-slides.git
 4. https://github.com/maverickgao8848/slide-craft-skill.git
 5. https://github.com/ConardLi/garden-skills.git
+
+### mermaid
+https://github.com/SpillwaveSolutions/design-doc-mermaid        --> mermaid-diagrm
+https://github.com/maverickgao8848/auto-mermaid-diagram-skill   --> mermaid-diagrm-auto
