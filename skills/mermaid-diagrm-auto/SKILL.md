@@ -1,5 +1,5 @@
 ---
-name: mermaid-diagram-v2
+name: mermaid-diagrm-auto
 description: >-
   参数化 Mermaid 图解生成器。支持两种模式：调研模式（多平台搜索扒一圈）和文本模式（分析已有文章/段落）。
   五个可调参数：生成数量、炫酷程度、简洁程度、配色方案、目标受众，精准控制输出风格。
@@ -7,6 +7,7 @@ description: >-
   工作流：模式选择 → 参数配置 → 输入处理 → 概念提取 → 方案确认（ASCII预览）→ Mermaid生成 → 输出验证。
   输出到 output/{topic}/diagrams/。
   确保在任何涉及可视化、图表、图解、流程图、思维导图的场景中使用此 skill，即使用户没有明确说"Mermaid"。
+disable-model-invocation: true
 license: MIT
 metadata:
   author: mav-content-fac
@@ -14,7 +15,7 @@ metadata:
   created: 2026-05-08
 ---
 
-# /mermaid-diagram-v2 — 参数化图解生成器
+# 参数化图解生成器
 
 像朋友一样帮你把复杂话题画清楚，风格你说了算。
 
