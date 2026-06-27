@@ -10,8 +10,8 @@ disable-model-invocation: true
 
 ## 技能结构
   - `references`
-  - `references/prompt-writing.md`：结构化提示词书写指导
-  - `references/index.md`: 模板索引
+    - `references/prompt-writing.md`：结构化提示词书写指导
+    - `references/index.md`：模板索引
 
 ## 工作步骤
 
