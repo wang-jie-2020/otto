@@ -1,0 +1,3146 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Style Recipes Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --density-factor: 1;
+
+      --canvas-bg: #0d1018;
+      --canvas-panel: #141924;
+      --canvas-border: rgba(255, 255, 255, 0.08);
+      --canvas-text: #f3f5ff;
+      --canvas-sub: #9ba4be;
+
+      --bg: #08090a;
+      --surface1: #16171c;
+      --surface2: #1e1f25;
+      --surface3: #26272e;
+      --line: rgba(255, 255, 255, 0.08);
+      --text-main: #f7f8f8;
+      --text-sub: #9ca3af;
+      --text-muted: #6b7280;
+      --accent: #5e6ad2;
+      --accent-ink: #f7f8ff;
+      --accent-soft: rgba(94, 106, 210, 0.24);
+      --accent-ring: rgba(94, 106, 210, 0.34);
+      --hero-glow: rgba(94, 106, 210, 0.34);
+      --button-bg: #1e1f25;
+      --button-bg-hover: #26272e;
+      --button-bg-active: #2d2e38;
+      --shadow-elev: 0 18px 50px rgba(0, 0, 0, 0.52);
+
+      --font-display: 'Inter Tight', 'Inter', 'Noto Sans SC', sans-serif;
+      --font-body: 'Inter', 'Noto Sans SC', sans-serif;
+      --font-ui: 'Inter', 'Noto Sans SC', sans-serif;
+      --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+
+      --display-weight: 620;
+      --body-line: 1.58;
+      --label-letter: 0.12em;
+      --title-track: -0.02em;
+
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+
+      --space-1: calc(8px * var(--density-factor));
+      --space-2: calc(12px * var(--density-factor));
+      --space-3: calc(16px * var(--density-factor));
+      --space-4: calc(24px * var(--density-factor));
+      --space-5: calc(32px * var(--density-factor));
+      --space-6: calc(44px * var(--density-factor));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: var(--font-ui);
+      color: var(--canvas-text);
+      text-wrap: pretty;
+      background:
+        radial-gradient(circle at 10% -6%, rgba(122, 136, 255, 0.26), transparent 36%),
+        radial-gradient(circle at 90% 0%, rgba(229, 147, 95, 0.22), transparent 30%),
+        var(--canvas-bg);
+      transition: background 220ms ease, color 220ms ease;
+    }
+
+    body[data-mode='light'] {
+      --canvas-bg: #eef2fb;
+      --canvas-panel: #ffffff;
+      --canvas-border: rgba(16, 23, 41, 0.12);
+      --canvas-text: #11162a;
+      --canvas-sub: #5f6881;
+
+      background:
+        radial-gradient(circle at 6% -2%, rgba(94, 106, 210, 0.14), transparent 34%),
+        radial-gradient(circle at 94% 0%, rgba(122, 70, 35, 0.12), transparent 28%),
+        var(--canvas-bg);
+    }
+
+    body[data-density='compact'] {
+      --density-factor: 0.86;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(280px, 340px) 1fr;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    @media (max-width: 1080px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel,
+    .main-card {
+      background: var(--canvas-panel);
+      border: 1px solid var(--canvas-border);
+      border-radius: 18px;
+    }
+
+    .panel {
+      padding: calc(20px * var(--density-factor));
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: sticky;
+      top: 16px;
+      max-height: calc(100vh - 32px);
+      overflow: auto;
+    }
+
+    @media (max-width: 1080px) {
+      .panel {
+        position: static;
+        max-height: none;
+      }
+    }
+
+    .kicker {
+      margin: 0;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--canvas-sub);
+    }
+
+    .panel h1 {
+      margin: 8px 0 0;
+      font-family: var(--font-display);
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-sub {
+      margin: 10px 0 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--canvas-sub);
+    }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+    }
+
+    .control {
+      display: grid;
+      gap: 6px;
+    }
+
+    .control label {
+      font-size: 12px;
+      color: var(--canvas-sub);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .control select,
+    .control input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--canvas-border);
+      background: transparent;
+      color: var(--canvas-text);
+      padding: 10px 12px;
+      font: 500 14px/1.2 var(--font-ui);
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .control input::placeholder {
+      color: var(--canvas-sub);
+    }
+
+    .control select:focus-visible,
+    .control input:focus-visible {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.22);
+    }
+
+    .control select option {
+      color: #141a2a;
+      background: #ffffff;
+    }
+
+    .control select optgroup {
+      color: #4d5872;
+      background: #eef2fb;
+      font-weight: 600;
+      font-style: normal;
+    }
+
+    body[data-mode='dark'] .control select option {
+      color: #eef3ff;
+      background: #1a2231;
+    }
+
+    body[data-mode='dark'] .control select optgroup {
+      color: #aab4ce;
+      background: #121a27;
+    }
+
+    .meta-block h2 {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--canvas-sub);
+      font-weight: 600;
+    }
+
+    .meta-block p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .meta-block ul {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--canvas-sub);
+    }
+
+    .meta-block strong {
+      color: var(--canvas-text);
+    }
+
+    .meta-block .muted {
+      color: var(--canvas-sub);
+      font-size: 12px;
+      margin-left: 6px;
+    }
+
+    .main {
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .main-card {
+      padding: calc(18px * var(--density-factor));
+      display: grid;
+      gap: 14px;
+    }
+
+    .recipe-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .recipe-head h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(20px, 2.2vw, 30px);
+      letter-spacing: -0.02em;
+    }
+
+    .badge {
+      border: 1px solid var(--canvas-border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font: 600 11px/1 var(--font-mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--canvas-sub);
+    }
+
+    .preview-shell {
+      background: var(--bg);
+      color: var(--text-main);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-elev);
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .preview-shell::before {
+      content: '';
+      position: absolute;
+      inset: -28% -12% auto;
+      height: 280px;
+      background: radial-gradient(circle at 48% 100%, var(--hero-glow), transparent 68%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .preview-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--surface1) 86%, transparent);
+    }
+
+    .nav-left,
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .signal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 99px;
+      background: var(--surface3);
+      border: 1px solid var(--line);
+    }
+
+    .nav-chip {
+      border: 1px solid var(--line);
+      background: var(--surface2);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font: 500 11px/1 var(--font-mono);
+      letter-spacing: 0.03em;
+      color: var(--text-sub);
+    }
+
+    .nav-chip.muted {
+      color: var(--text-muted);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      border-bottom: 1px solid var(--line);
+      align-items: end;
+    }
+
+    .hero-label {
+      margin: 0;
+      font-family: var(--font-ui);
+      font-size: 11px;
+      letter-spacing: var(--label-letter);
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .hero-title {
+      margin: 12px 0 0;
+      font-family: var(--font-display);
+      font-size: clamp(32px, 6vw, 72px);
+      font-weight: var(--display-weight);
+      line-height: 0.96;
+      letter-spacing: var(--title-track);
+      max-width: 14ch;
+    }
+
+    .hero-copy {
+      margin: 16px 0 0;
+      max-width: 48ch;
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: var(--body-line);
+      color: var(--text-sub);
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--button-bg);
+      color: var(--text-main);
+      min-height: 38px;
+      padding: 0 14px;
+      font: 500 13px/1 var(--font-ui);
+      cursor: pointer;
+      transition:
+        transform 140ms ease,
+        background 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease;
+    }
+
+    .btn:hover,
+    .btn.is-hover {
+      transform: translateY(-1px);
+      background: var(--button-bg-hover);
+      border-color: var(--accent-soft);
+    }
+
+    .btn:active,
+    .btn.is-active {
+      transform: translateY(0);
+      background: var(--button-bg-active);
+      border-color: var(--accent);
+    }
+
+    .btn[disabled],
+    .btn.is-disabled {
+      color: var(--text-muted);
+      opacity: 0.56;
+      cursor: not-allowed;
+      background: var(--surface1);
+      transform: none;
+      border-color: var(--line);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn.primary:hover,
+    .btn.primary.is-hover {
+      filter: brightness(1.04);
+    }
+
+    .btn.primary:active,
+    .btn.primary.is-active {
+      filter: brightness(0.94);
+    }
+
+    .hero-visual {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background:
+        linear-gradient(165deg, color-mix(in srgb, var(--surface2) 96%, transparent), var(--surface1));
+      padding: var(--space-3);
+      min-height: 220px;
+      display: grid;
+      align-content: center;
+    }
+
+    .visual-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .visual-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .visual-line {
+      height: 8px;
+      border-radius: 99px;
+      background: color-mix(in srgb, var(--text-sub) 30%, transparent);
+      display: block;
+    }
+
+    .visual-line.w-80 {
+      width: 80%;
+    }
+
+    .visual-line.w-72 {
+      width: 72%;
+    }
+
+    .visual-line.w-68 {
+      width: 68%;
+    }
+
+    .visual-line.w-58 {
+      width: 58%;
+    }
+
+    .visual-line.w-52 {
+      width: 52%;
+    }
+
+    .visual-line.w-48 {
+      width: 48%;
+    }
+
+    .visual-line.w-36 {
+      width: 36%;
+    }
+
+    .visual-line.w-26 {
+      width: 26%;
+    }
+
+    .visual-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 99px;
+      background: var(--accent);
+      display: block;
+    }
+
+    .module-grid {
+      padding: var(--space-4);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .module-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .module-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--surface1);
+      padding: var(--space-3);
+      display: grid;
+      gap: 10px;
+    }
+
+    .section-title {
+      margin: 0;
+      font: 600 12px/1.3 var(--font-ui);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .state-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .state-row.vertical {
+      flex-direction: column;
+    }
+
+    .input {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      color: var(--text-main);
+      padding: 0 12px;
+      font: 500 13px/1 var(--font-ui);
+      outline: none;
+      transition: border-color 140ms ease, box-shadow 140ms ease;
+    }
+
+    .input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .input:focus,
+    .input.is-focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-ring);
+    }
+
+    .input:disabled {
+      cursor: not-allowed;
+      opacity: 0.58;
+    }
+
+    .tag-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--surface2);
+      color: var(--text-sub);
+      font: 500 12px/1 var(--font-mono);
+      padding: 8px 10px;
+      letter-spacing: 0.03em;
+      text-transform: lowercase;
+    }
+
+    .tag.accent {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--text-main);
+    }
+
+    .tag.muted {
+      color: var(--text-muted);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .metric-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: var(--surface2);
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .metric-card p {
+      margin: 0;
+      font: 500 11px/1.2 var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    .metric-card strong {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: var(--display-weight);
+      letter-spacing: var(--title-track);
+    }
+
+    .token-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+
+    .token-card {
+      border: 1px solid var(--canvas-border);
+      border-radius: 12px;
+      background: color-mix(in srgb, var(--canvas-panel) 90%, transparent);
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .swatch {
+      height: 56px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--token-color);
+    }
+
+    .token-name {
+      margin: 0;
+      font: 600 12px/1.2 var(--font-ui);
+      color: var(--canvas-text);
+    }
+
+    .token-value {
+      margin: 0;
+      font: 500 11px/1.3 var(--font-mono);
+      color: var(--canvas-sub);
+      word-break: break-all;
+    }
+
+    .code-snippet {
+      margin: 0;
+      border-radius: 12px;
+      border: 1px solid var(--canvas-border);
+      background: color-mix(in srgb, var(--canvas-panel) 88%, #000 12%);
+      color: var(--canvas-text);
+      padding: 12px;
+      overflow: auto;
+      font: 500 12px/1.6 var(--font-mono);
+    }
+
+    .preview-shell[data-recipe='aesop'] .hero-title {
+      font-style: italic;
+      font-size: clamp(30px, 5vw, 58px);
+      line-height: 1.02;
+      max-width: 16ch;
+    }
+
+    .preview-shell[data-recipe='aesop'] .hero-copy {
+      max-width: 56ch;
+    }
+
+    .preview-shell[data-recipe='pentagram'] .hero-title {
+      text-transform: uppercase;
+      max-width: 10ch;
+      font-size: clamp(38px, 8vw, 96px);
+      line-height: 0.88;
+      letter-spacing: -0.05em;
+    }
+
+    .preview-shell[data-recipe='pentagram'] .hero-copy {
+      max-width: 34ch;
+      font-size: 15px;
+      line-height: 1.46;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body data-density="cozy" data-mode="dark">
+  <div class="app">
+    <aside class="panel">
+      <div>
+        <p class="kicker">Style Recipes</p>
+        <h1>纯 HTML 预览台</h1>
+        <p class="panel-sub">切换 recipe、明暗模式、密度，直接看组件状态与 token 的视觉效果。</p>
+      </div>
+
+      <div class="controls">
+        <div class="control">
+          <label for="recipeSearch">Search</label>
+          <input id="recipeSearch" type="text" placeholder="输入名称或 school，例如 linear / editorial" />
+        </div>
+
+        <div class="control">
+          <label for="recipeSelect">Recipe</label>
+          <select id="recipeSelect">
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect">
+            <option value="recipe">跟随 recipe 默认</option>
+            <option value="light">强制 Light</option>
+            <option value="dark">强制 Dark</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="densitySelect">Density</label>
+          <select id="densitySelect">
+            <option value="cozy">Cozy</option>
+            <option value="compact">Compact</option>
+          </select>
+        </div>
+      </div>
+
+      <section class="meta-block">
+        <h2>定位</h2>
+        <p>
+          <strong id="recipeName">Linear</strong>
+          <span id="recipeSchool" class="muted">Modern Tool / Builder SaaS</span>
+        </p>
+        <p id="recipeVibe">Quiet luxury for developer tools.</p>
+        <p><strong>Best for：</strong><span id="recipeBestFor"></span></p>
+      </section>
+
+      <section class="meta-block">
+        <h2>Signature moves</h2>
+        <ul id="signatureList"></ul>
+      </section>
+
+      <section class="meta-block">
+        <h2>Avoid</h2>
+        <ul id="avoidList"></ul>
+      </section>
+    </aside>
+
+    <main class="main">
+      <section class="main-card">
+        <div class="recipe-head">
+          <div>
+            <p class="kicker" id="previewKicker">Modern Tool / Builder SaaS</p>
+            <h2 id="previewTitle">Live Recipe Preview</h2>
+          </div>
+          <span class="badge" id="modeBadge">dark</span>
+        </div>
+
+        <article class="preview-shell" id="previewShell" data-recipe="linear">
+          <header class="preview-nav">
+            <div class="nav-left">
+              <span class="signal-dot"></span>
+              <span class="signal-dot"></span>
+              <span class="signal-dot"></span>
+            </div>
+            <div class="nav-right">
+              <span class="nav-chip">⌘K Command</span>
+              <span class="nav-chip">A / B Variant</span>
+              <span class="nav-chip muted">No framework</span>
+            </div>
+          </header>
+
+          <section class="hero">
+            <div class="hero-copy-wrap">
+              <p class="hero-label">Recipe Preview</p>
+              <h3 class="hero-title" id="heroTitle">Build fast. Stay precise.</h3>
+              <p class="hero-copy" id="heroCopy">
+                使用同一套组件结构，切换 token 与排版策略，直观看风格差异。
+              </p>
+              <div class="cta-row">
+                <button class="btn primary" id="ctaPrimary">Request access</button>
+                <button class="btn" id="ctaSecondary">View demo</button>
+              </div>
+            </div>
+
+            <div class="hero-visual">
+              <div class="visual-grid">
+                <div class="visual-card">
+                  <span class="visual-line w-80"></span>
+                  <span class="visual-line w-58"></span>
+                  <span class="visual-line w-36"></span>
+                </div>
+                <div class="visual-card">
+                  <span class="visual-dot"></span>
+                  <span class="visual-line w-68"></span>
+                  <span class="visual-line w-48"></span>
+                </div>
+                <div class="visual-card">
+                  <span class="visual-line w-72"></span>
+                  <span class="visual-line w-52"></span>
+                  <span class="visual-line w-26"></span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="module-grid">
+            <article class="module-card">
+              <h4 class="section-title">Buttons · default / hover / active / disabled</h4>
+              <div class="state-row">
+                <button class="btn">Default</button>
+                <button class="btn is-hover">Hover</button>
+                <button class="btn is-active">Active</button>
+                <button class="btn" disabled>Disabled</button>
+              </div>
+            </article>
+
+            <article class="module-card">
+              <h4 class="section-title">Inputs · default / focus / disabled</h4>
+              <div class="state-row vertical">
+                <input class="input" placeholder="Default state" />
+                <input class="input is-focus" value="Focused state" />
+                <input class="input" value="Disabled state" disabled />
+              </div>
+            </article>
+
+            <article class="module-card">
+              <h4 class="section-title">Tags</h4>
+              <div class="tag-row">
+                <span class="tag">preview</span>
+                <span class="tag accent">accent</span>
+                <span class="tag muted">muted</span>
+              </div>
+            </article>
+
+            <article class="module-card">
+              <h4 class="section-title">Metrics</h4>
+              <div class="metric-grid">
+                <div class="metric-card">
+                  <p>Conversion</p>
+                  <strong>19.8%</strong>
+                </div>
+                <div class="metric-card">
+                  <p>Latency P95</p>
+                  <strong>82ms</strong>
+                </div>
+                <div class="metric-card">
+                  <p>Adoption</p>
+                  <strong>72%</strong>
+                </div>
+              </div>
+            </article>
+          </section>
+        </article>
+      </section>
+
+      <section class="main-card">
+        <div class="recipe-head">
+          <h2>Token Swatches</h2>
+          <span class="badge">live</span>
+        </div>
+        <div id="tokenGrid" class="token-grid"></div>
+      </section>
+
+      <section class="main-card">
+        <div class="recipe-head">
+          <h2>当前 CSS 变量片段</h2>
+        </div>
+        <pre id="snippet" class="code-snippet"></pre>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const recipes = {
+      "active-theory": {
+            "name": "Active Theory",
+            "school": "Motion / Experimental",
+            "vibe": "Cinematic web experiences, WebGL heroes, physical-feeling interaction",
+            "bestFor": "Brand launch sites, game / entertainment products, \"experience marketing\" pieces",
+            "defaultMode": "dark",
+            "heroTitle": "Active Theory",
+            "heroCopy": "Cinematic web experiences, WebGL heroes, physical-feeling interaction 适合：Brand launch sites, game / entertainment products, \"experience marketing\" pieces",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "A full-screen WebGL hero scene that the user moves through (scroll = camera path)",
+                  "Real-time physics or particle systems responding to cursor / device tilt",
+                  "Carefully art-directed transitions between scenes (not generic fades)",
+                  "Sound design integrated (subtle ambient audio that ducks during text passages)"
+            ],
+            "avoid": [
+                  "Many small WebGL moments (one big set-piece is the recipe, not five small ones)",
+                  "Trying to ship a content-heavy site this way (cinematic recipes work for marketing moments, not docs)",
+                  "Reaching for off-the-shelf Three.js demos (this recipe demands hand-crafted scenes — generic WebGL reads as cheap)"
+            ],
+            "spacing": "cinematic — content sits centered or in unexpected corners against a full-bleed canvas",
+            "motion": "feature-film-grade. Camera moves through a 3D space. Physics-driven debris / particles. The page is a stage.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 700,
+                  "bodyLine": 1.52,
+                  "labelLetter": "0.11em",
+                  "titleTrack": "-0.026em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "dark": {
+                        "--bg": "#0D1018",
+                        "--surface1": "#25282F",
+                        "--surface2": "#393B42",
+                        "--surface3": "#4C4E54",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#5E6AD2",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(94,106,210,0.24)",
+                        "--accent-ring": "rgba(94,106,210,0.34)",
+                        "--hero-glow": "rgba(94,106,210,0.30)",
+                        "--button-bg": "#393B42",
+                        "--button-bg-hover": "#4C4E54",
+                        "--button-bg-active": "#595A60",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  },
+                  "light": {
+                        "--bg": "#E7E7E8",
+                        "--surface1": "#E2E2E3",
+                        "--surface2": "#DBDBDC",
+                        "--surface3": "#D2D2D3",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#5E6AD2",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(94,106,210,0.16)",
+                        "--accent-ring": "rgba(94,106,210,0.24)",
+                        "--hero-glow": "rgba(94,106,210,0.18)",
+                        "--button-bg": "#DBDBDC",
+                        "--button-bg-hover": "#D2D2D3",
+                        "--button-bg-active": "#C3C3C4",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  }
+            }
+      },
+      "aesop": {
+            "name": "Aesop Skincare",
+            "school": "Editorial / Minimalist",
+            "vibe": "Apothecary refinement, sage and ink, serif copy as conversation",
+            "bestFor": "Premium consumer goods (skincare, candles, eyewear), restaurants with literary aspirations, hospitality",
+            "defaultMode": "light",
+            "heroTitle": "Ritual before speed.",
+            "heroCopy": "Aesop 语气强调“慢阅读”与材质感：更长行文、低对比层级、几乎无阴影。视觉重心在文字节奏。",
+            "ctaPrimary": "Explore ritual",
+            "ctaSecondary": "Ingredients",
+            "signature": [
+                  "Body copy reads like product writing in a literary magazine — long, well-cadenced sentences, justified text, no marketing punchiness",
+                  "Product is photographed on a warm chamois surface with a single sage prop (leaf, marble dish, linen) and a long shadow",
+                  "Small-caps section labels (`INGREDIENTS` / `RITUAL`) above each block",
+                  "All-text navigation in the masthead, letter-spaced"
+            ],
+            "avoid": [
+                  "Bold weights anywhere — Aesop is all regular and italic",
+                  "Color other than sage / amber / ink — no blues, no purples, no UI-blue accents",
+                  "Pop-up modals (Aesop's UI politely waits)",
+                  "Lifestyle stock photography of smiling models — props and product only"
+            ],
+            "spacing": "8 / 16 / 24 / 40 / 72 / 120",
+            "motion": "subtle fades, slow drawer slide-ins (~450ms ease-out). Never spring-bounce.",
+            "fonts": {
+                  "display": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "body": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 540,
+                  "bodyLine": 1.66,
+                  "labelLetter": "0.14em",
+                  "titleTrack": "-0.012em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#E8E4D9",
+                        "--surface1": "#F2EFE5",
+                        "--surface2": "#1B1B1B",
+                        "--surface3": "#7A8470",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#1B1B1B",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#7A8470",
+                        "--accent": "#7A4623",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(122,70,35,0.16)",
+                        "--accent-ring": "rgba(122,70,35,0.24)",
+                        "--hero-glow": "rgba(122,70,35,0.18)",
+                        "--button-bg": "#1B1B1B",
+                        "--button-bg-hover": "#7A8470",
+                        "--button-bg-active": "#717B68",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#252423",
+                        "--surface1": "#3B3A39",
+                        "--surface2": "#4C4B4B",
+                        "--surface3": "#5E5D5C",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#7A4623",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(122,70,35,0.24)",
+                        "--accent-ring": "rgba(122,70,35,0.34)",
+                        "--hero-glow": "rgba(122,70,35,0.30)",
+                        "--button-bg": "#4C4B4B",
+                        "--button-bg-hover": "#5E5D5C",
+                        "--button-bg-active": "#696867",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "apple-hig": {
+            "name": "Apple Human Interface",
+            "school": "Editorial / Minimalist",
+            "vibe": "Generous space, hero product on white, one thought per screen",
+            "bestFor": "Premium hardware, premium software, \"this product deserves a stage\" feel",
+            "defaultMode": "light",
+            "heroTitle": "Apple Human Interface",
+            "heroCopy": "Generous space, hero product on white, one thought per screen 适合：Premium hardware, premium software, \"this product deserves a stage\" feel",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "One product photograph centered on whitespace, occupying ~40% of the hero",
+                  "Hero headline in big display weight, body line below in muted gray (`#86868B`), single CTA in system-blue text-link form (no chunky button on hero — that comes later)",
+                  "Section anatomy: tiny eyebrow label → big headline → one paragraph → one product shot → repeat. No tabs, no cards, no bento.",
+                  "Hairline `#D2D2D7` dividers between sections, never anything heavier"
+            ],
+            "avoid": [
+                  "Any gradient mesh, glow, or \"tech atmosphere\" — Apple's gradients are almost always subtle silver-to-charcoal on a product surface, not background decoration",
+                  "Stacking multiple CTAs in the hero",
+                  "Card grids of features (Apple uses long vertical sections, one idea each)",
+                  "Emoji of any kind on marketing pages"
+            ],
+            "spacing": "4 / 8 / 16 / 24 / 40 / 64 / 96 / 160. Section breaks are large (160px+ vertical). Headlines breathe.",
+            "motion": "cubic-bezier expo-out; durations 350–650ms for layout moves, 150–250ms for hover. Never bouncy. Often a slow Ken Burns on hero imagery.",
+            "fonts": {
+                  "display": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "body": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 540,
+                  "bodyLine": 1.66,
+                  "labelLetter": "0.14em",
+                  "titleTrack": "-0.012em"
+            },
+            "radius": {
+                  "sm": 12,
+                  "md": 18,
+                  "lg": 22
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#FFFFFF",
+                        "--surface1": "#000000",
+                        "--surface2": "#1D1D1F",
+                        "--surface3": "#F5F5F7",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#1D1D1F",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#86868B",
+                        "--accent": "#0071E3",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(0,113,227,0.16)",
+                        "--accent-ring": "rgba(0,113,227,0.24)",
+                        "--hero-glow": "rgba(0,113,227,0.18)",
+                        "--button-bg": "#1D1D1F",
+                        "--button-bg-hover": "#F5F5F7",
+                        "--button-bg-active": "#E4E4E6",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  },
+                  "dark": {
+                        "--bg": "#292929",
+                        "--surface1": "#3E3E3E",
+                        "--surface2": "#505050",
+                        "--surface3": "#616161",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#0071E3",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(0,113,227,0.24)",
+                        "--accent-ring": "rgba(0,113,227,0.34)",
+                        "--hero-glow": "rgba(0,113,227,0.30)",
+                        "--button-bg": "#505050",
+                        "--button-bg-hover": "#616161",
+                        "--button-bg-active": "#6C6C6C",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  }
+            }
+      },
+      "are-na": {
+            "name": "Are.na",
+            "school": "Brutalist / Raw",
+            "vibe": "System fonts on purpose, content > chrome, the web of the late 90s but considered",
+            "bestFor": "Indie tools, creative platforms, \"research-flavored\" products, artist communities",
+            "defaultMode": "light",
+            "heroTitle": "Are.na",
+            "heroCopy": "System fonts on purpose, content > chrome, the web of the late 90s but considered 适合：Indie tools, creative platforms, \"research-flavored\" products, artist communities",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Underlined blue links, visited purple — left as browser default",
+                  "Headings are just larger versions of body type, no special font",
+                  "Tables, lists, and prose all flow without ornament",
+                  "Footers are tiny, plain, link-rich (the early-web \"all links\" footer)"
+            ],
+            "avoid": [
+                  "Custom fonts of any kind",
+                  "Color other than the blue / purple link colors and the ink + ground",
+                  "Hover animations, transitions of any kind",
+                  "Modals, tooltips, micro-interactions"
+            ],
+            "spacing": "4 / 8 / 16 / 24 / 32. Tight. Content-dense.",
+            "motion": "none, or instant",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 770,
+                  "bodyLine": 1.45,
+                  "labelLetter": "0.08em",
+                  "titleTrack": "-0.048em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#FFFFFF",
+                        "--surface1": "#000000",
+                        "--surface2": "#0000EE",
+                        "--surface3": "#551A8B",
+                        "--line": "#CCCCCC",
+                        "--text-main": "#551A8B",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#0000EE",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(0,0,238,0.16)",
+                        "--accent-ring": "rgba(0,0,238,0.24)",
+                        "--hero-glow": "rgba(0,0,238,0.18)",
+                        "--button-bg": "#0000EE",
+                        "--button-bg-hover": "#551A8B",
+                        "--button-bg-active": "#4F1881",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#292929",
+                        "--surface1": "#3E3E3E",
+                        "--surface2": "#505050",
+                        "--surface3": "#616161",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#0000EE",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(0,0,238,0.24)",
+                        "--accent-ring": "rgba(0,0,238,0.34)",
+                        "--hero-glow": "rgba(0,0,238,0.30)",
+                        "--button-bg": "#505050",
+                        "--button-bg-hover": "#616161",
+                        "--button-bg-active": "#6C6C6C",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "balenciaga-post-2017": {
+            "name": "Balenciaga",
+            "school": "Brutalist / Raw",
+            "vibe": "Default browser styling weaponized, Helvetica at absurd scale, anti-luxury luxury",
+            "bestFor": "Fashion / counter-culture / fragrance brands, \"we're too cool to design this\" positioning",
+            "defaultMode": "light",
+            "heroTitle": "Balenciaga",
+            "heroCopy": "Default browser styling weaponized, Helvetica at absurd scale, anti-luxury luxury 适合：Fashion / counter-culture / fragrance brands, \"we're too cool to design this\" positioning",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "All-caps Helvetica headlines at extreme scale, tightly tracked, often left-aligned hard against the page edge",
+                  "Product photography is editorial / fashion-style — model + product, harsh lighting, awkward poses; never the smiling-stock-model pattern",
+                  "Navigation is plain text links, sometimes just a vertical list at the top of the page",
+                  "Captions and metadata stripped to minimum (model name, designer, location)"
+            ],
+            "avoid": [
+                  "Any font other than Helvetica / Arial",
+                  "Color",
+                  "Polished UI affordances (rounded buttons, drop shadows, hover effects)",
+                  "Decorative anything"
+            ],
+            "spacing": "8 / 16 / 24 / 40 — restrained, but not luxurious-spacious; more \"we didn't bother to soften it\"",
+            "motion": "none — pages don't animate. Hover at most changes underline.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 770,
+                  "bodyLine": 1.45,
+                  "labelLetter": "0.08em",
+                  "titleTrack": "-0.048em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#FFFFFF",
+                        "--surface1": "#FFFFFF",
+                        "--surface2": "#F5F4F0",
+                        "--surface3": "#E8E8E8",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#000000",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#F5F4F0",
+                        "--accent": "#F5F4F0",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(245,244,240,0.16)",
+                        "--accent-ring": "rgba(245,244,240,0.24)",
+                        "--hero-glow": "rgba(245,244,240,0.18)",
+                        "--button-bg": "#F5F4F0",
+                        "--button-bg-hover": "#E8E8E8",
+                        "--button-bg-active": "#D8D8D8",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#292929",
+                        "--surface1": "#3E3E3E",
+                        "--surface2": "#505050",
+                        "--surface3": "#616161",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#F5F4F0",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(245,244,240,0.24)",
+                        "--accent-ring": "rgba(245,244,240,0.34)",
+                        "--hero-glow": "rgba(245,244,240,0.30)",
+                        "--button-bg": "#505050",
+                        "--button-bg-hover": "#616161",
+                        "--button-bg-active": "#6C6C6C",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "bloomberg-businessweek-turley": {
+            "name": "Bloomberg Businessweek",
+            "school": "Brutalist / Raw",
+            "vibe": "Typographic violence, magazine grid abused, copy *is* image",
+            "bestFor": "Editorial features, agency portfolios, opinionated content sites",
+            "defaultMode": "light",
+            "heroTitle": "Bloomberg Businessweek",
+            "heroCopy": "Typographic violence, magazine grid abused, copy *is* image 适合：Editorial features, agency portfolios, opinionated content sites",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Headline set so large it visibly breaks the grid (letters touching page edges)",
+                  "Color blocks of saturated orange / yellow / blue placed under or behind type",
+                  "Photo cutouts (subjects silhouetted, dropped onto color fields) — often awkwardly cropped on purpose",
+                  "Tables of data styled like magazine spreads, not like UI components — bold, contrasty, opinionated"
+            ],
+            "avoid": [
+                  "Tasteful design (the recipe is anti-tasteful on purpose)",
+                  "More than 3 colors per spread",
+                  "Smooth transitions",
+                  "Web defaults (every element should feel set, not generated)"
+            ],
+            "spacing": "deliberately broken — content pushed off-grid, sometimes touching edges or overflowing intentionally",
+            "motion": "jarring cuts, not smooth eases. If anything moves it slams into place.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 770,
+                  "bodyLine": 1.45,
+                  "labelLetter": "0.08em",
+                  "titleTrack": "-0.048em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#FF3D00",
+                        "--surface1": "#FFE800",
+                        "--surface2": "#001AFF",
+                        "--surface3": "#FFFFFF",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#FF3D00",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(255,61,0,0.16)",
+                        "--accent-ring": "rgba(255,61,0,0.24)",
+                        "--hero-glow": "rgba(255,61,0,0.18)",
+                        "--button-bg": "#001AFF",
+                        "--button-bg-hover": "#FFFFFF",
+                        "--button-bg-active": "#EDEDED",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#290A00",
+                        "--surface1": "#3E221A",
+                        "--surface2": "#50362E",
+                        "--surface3": "#614A42",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#FF3D00",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(255,61,0,0.24)",
+                        "--accent-ring": "rgba(255,61,0,0.34)",
+                        "--hero-glow": "rgba(255,61,0,0.30)",
+                        "--button-bg": "#50362E",
+                        "--button-bg-hover": "#614A42",
+                        "--button-bg-active": "#6C574F",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "bloomberg-terminal": {
+            "name": "Bloomberg Terminal",
+            "school": "Information Architecture",
+            "vibe": "Maximum data-ink, mission-critical density, chrome-amber on near-black",
+            "bestFor": "Finance / trading / monitoring dashboards, \"professionals don't have time for whitespace\" products",
+            "defaultMode": "dark",
+            "heroTitle": "Bloomberg Terminal",
+            "heroCopy": "Maximum data-ink, mission-critical density, chrome-amber on near-black 适合：Finance / trading / monitoring dashboards, \"professionals don't have time for whitespace\" products",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Multi-pane workspaces with hairline dividers — 4 to 9 panels visible at once",
+                  "Amber text on near-black for the most important data; chrome-white for secondary",
+                  "Status / ticker bar at top with marquee-scrolling tickers, color-coded up/down",
+                  "Keyboard-shortcut chips in the margins (`F9: TRADE`)"
+            ],
+            "avoid": [
+                  "Any rounded corners",
+                  "Hero sections / marketing-style headlines",
+                  "Photography or illustration of any kind",
+                  "Decorative gradients (gradient meshes are not data-ink)"
+            ],
+            "spacing": "2 / 4 / 8 / 12. Multi-pane layouts with no luxury margins.",
+            "motion": "ticker scroll (uniform linear), instant state flips, blink on data update (50–80ms flash). No eased animations.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 740,
+                  "bodyLine": 1.5,
+                  "labelLetter": "0.1em",
+                  "titleTrack": "-0.04em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "dark": {
+                        "--bg": "#0A0E1A",
+                        "--surface1": "#11172A",
+                        "--surface2": "#1A2138",
+                        "--surface3": "#FFA02F",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#E8ECF4",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#5E6680",
+                        "--accent": "#FFA02F",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(255,160,47,0.24)",
+                        "--accent-ring": "rgba(255,160,47,0.34)",
+                        "--hero-glow": "rgba(255,160,47,0.30)",
+                        "--button-bg": "#1A2138",
+                        "--button-bg-hover": "#FFA02F",
+                        "--button-bg-active": "#FFA73E",
+                        "--shadow-elev": "none"
+                  },
+                  "light": {
+                        "--bg": "#E6E7E8",
+                        "--surface1": "#E1E2E3",
+                        "--surface2": "#DADBDC",
+                        "--surface3": "#D1D2D3",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#FFA02F",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(255,160,47,0.16)",
+                        "--accent-ring": "rgba(255,160,47,0.24)",
+                        "--hero-glow": "rgba(255,160,47,0.18)",
+                        "--button-bg": "#DADBDC",
+                        "--button-bg-hover": "#D1D2D3",
+                        "--button-bg-active": "#C2C3C4",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "dieter-rams-braun": {
+            "name": "Dieter Rams / Braun",
+            "school": "Editorial / Minimalist",
+            "vibe": "\"Less but better\", functional honesty, industrial restraint",
+            "bestFor": "Hardware product pages, audio gear, industrial / tool brands, design-led B2B",
+            "defaultMode": "light",
+            "heroTitle": "Dieter Rams / Braun",
+            "heroCopy": "\"Less but better\", functional honesty, industrial restraint 适合：Hardware product pages, audio gear, industrial / tool brands, design-led B2B",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Diagrammatic exploded views of the product with measurement callouts (real or fictional)",
+                  "A single signal-orange dot on the page indicating \"active\" or \"power\" — never decorative",
+                  "Tabular spec listings as a first-class layout element (not hidden behind a \"Specs\" toggle)",
+                  "Every label exactly what it is, in plain language (\"ON / OFF\" not \"Toggle interaction mode\")"
+            ],
+            "avoid": [
+                  "Photography that romanticizes the product — Braun shoots it on a grid background like an engineering specimen",
+                  "Multiple accent colors",
+                  "Curves anywhere — even hover effects shouldn't bounce",
+                  "Lifestyle imagery"
+            ],
+            "spacing": "based on a 4px sub-grid; visible values 4 / 8 / 16 / 24 / 32 / 64 / 128. Functional, no \"luxury whitespace\" inflation.",
+            "motion": "utilitarian — instant state changes (~80–120ms), no flourish.",
+            "fonts": {
+                  "display": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "body": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 540,
+                  "bodyLine": 1.66,
+                  "labelLetter": "0.14em",
+                  "titleTrack": "-0.012em"
+            },
+            "radius": {
+                  "sm": 2,
+                  "md": 4,
+                  "lg": 4
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#E4E1DC",
+                        "--surface1": "#F5F4F0",
+                        "--surface2": "#191919",
+                        "--surface3": "#A8A8A8",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#191919",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#E96A26",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(233,106,38,0.16)",
+                        "--accent-ring": "rgba(233,106,38,0.24)",
+                        "--hero-glow": "rgba(233,106,38,0.18)",
+                        "--button-bg": "#191919",
+                        "--button-bg-hover": "#A8A8A8",
+                        "--button-bg-active": "#9C9C9C",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#242423",
+                        "--surface1": "#3A3A39",
+                        "--surface2": "#4B4B4B",
+                        "--surface3": "#5D5D5C",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#E96A26",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(233,106,38,0.24)",
+                        "--accent-ring": "rgba(233,106,38,0.34)",
+                        "--hero-glow": "rgba(233,106,38,0.30)",
+                        "--button-bg": "#4B4B4B",
+                        "--button-bg-hover": "#5D5D5C",
+                        "--button-bg-active": "#686867",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "field-io": {
+            "name": "Field.io",
+            "school": "Motion / Experimental",
+            "vibe": "The brand is movement; the page generates itself in front of the visitor",
+            "bestFor": "Brand films, launch moments, agency portfolios, \"the visit is the experience\" sites",
+            "defaultMode": "dark",
+            "heroTitle": "Field.io",
+            "heroCopy": "The brand is movement; the page generates itself in front of the visitor 适合：Brand films, launch moments, agency portfolios, \"the visit is the experience\" sites",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Generative type sequences where letters appear, morph, and resolve into headlines on scroll",
+                  "Particle / mesh systems that respond to cursor and scroll position",
+                  "Long-tail eased curves (expo-out, quint-out) — `cubic-bezier(0.83, 0, 0.17, 1)` and similar",
+                  "Section breaks where the entire page state transforms (a full-bleed canvas overtakes the layout)"
+            ],
+            "avoid": [
+                  "Static recipes (this isn't a static recipe — a static screenshot will feel underwhelming)",
+                  "Too many cursor-reactive elements (one or two key WebGL moments is the recipe, not the whole page)",
+                  "Heavy text content — this recipe is for moments, not for reading"
+            ],
+            "spacing": "irregular by design — content lands in unexpected positions; the grid sometimes appears and disappears",
+            "motion": "the entire recipe is motion. Multi-stage choreographed sequences. Scroll-driven not just for parallax but for state changes. Pages frequently feel like a video playing itself.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 700,
+                  "bodyLine": 1.52,
+                  "labelLetter": "0.11em",
+                  "titleTrack": "-0.026em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "dark": {
+                        "--bg": "#0B0B0F",
+                        "--surface1": "#000000",
+                        "--surface2": "#0CE0E5",
+                        "--surface3": "#5B2EFF",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#FFFFFF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#0CE0E5",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(12,224,229,0.24)",
+                        "--accent-ring": "rgba(12,224,229,0.34)",
+                        "--hero-glow": "rgba(12,224,229,0.30)",
+                        "--button-bg": "#0CE0E5",
+                        "--button-bg-hover": "#5B2EFF",
+                        "--button-bg-active": "#663DFF",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  },
+                  "light": {
+                        "--bg": "#E7E7E7",
+                        "--surface1": "#E2E2E2",
+                        "--surface2": "#DBDBDB",
+                        "--surface3": "#D2D2D2",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#0CE0E5",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(12,224,229,0.16)",
+                        "--accent-ring": "rgba(12,224,229,0.24)",
+                        "--hero-glow": "rgba(12,224,229,0.18)",
+                        "--button-bg": "#DBDBDB",
+                        "--button-bg-hover": "#D2D2D2",
+                        "--button-bg-active": "#C3C3C3",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  }
+            }
+      },
+      "headspace-meditation": {
+            "name": "Headspace / Calm",
+            "school": "Warm Humanist",
+            "vibe": "Soft pastels, rounded everything, calming hand-drawn illustration",
+            "bestFor": "Wellness / meditation / health apps, sleep / kids products, \"approachable expert\" services",
+            "defaultMode": "light",
+            "heroTitle": "Headspace / Calm",
+            "heroCopy": "Soft pastels, rounded everything, calming hand-drawn illustration 适合：Wellness / meditation / health apps, sleep / kids products, \"approachable expert\" services",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "A central character / mascot illustrated in simple round shapes (Headspace's orange circle character)",
+                  "Animated breathing circles that expand and contract in sync with body copy (\"breathe in… breathe out…\")",
+                  "Warm peach gradient grounds that slowly drift between hues",
+                  "Rounded everything — every container is a pill or a soft-corner rectangle"
+            ],
+            "avoid": [
+                  "Cool palettes — Headspace lives in warm tones, even at night-mode (warm dark teal not cool navy)",
+                  "Sharp corners anywhere",
+                  "Harsh motion (no bouncy springs — too jolting; gentle eases only)",
+                  "More than 2 colors per scene"
+            ],
+            "spacing": "generous — 8 / 16 / 24 / 40 / 64 / 96",
+            "motion": "gentle, slow, breathing. 400–800ms eases. Hover lifts have a \"buoyant\" feel. A subtle breathing animation (1.5–4s cycle) on key elements.",
+            "fonts": {
+                  "display": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 620,
+                  "bodyLine": 1.62,
+                  "labelLetter": "0.12em",
+                  "titleTrack": "-0.018em"
+            },
+            "radius": {
+                  "sm": 16,
+                  "md": 24,
+                  "lg": 32
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#FFE2C5",
+                        "--surface1": "#FFEDD5",
+                        "--surface2": "#F4A573",
+                        "--surface3": "#1B3A47",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#1B3A47",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#B0A5D1",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(176,165,209,0.16)",
+                        "--accent-ring": "rgba(176,165,209,0.24)",
+                        "--hero-glow": "rgba(176,165,209,0.18)",
+                        "--button-bg": "#F4A573",
+                        "--button-bg-hover": "#1B3A47",
+                        "--button-bg-active": "#193642",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  },
+                  "dark": {
+                        "--bg": "#292420",
+                        "--surface1": "#3E3A36",
+                        "--surface2": "#504B48",
+                        "--surface3": "#615D5A",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#B0A5D1",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(176,165,209,0.24)",
+                        "--accent-ring": "rgba(176,165,209,0.34)",
+                        "--hero-glow": "rgba(176,165,209,0.30)",
+                        "--button-bg": "#504B48",
+                        "--button-bg-hover": "#615D5A",
+                        "--button-bg-active": "#6C6866",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  }
+            }
+      },
+      "linear": {
+            "name": "Linear",
+            "school": "Modern Tool / Builder SaaS",
+            "vibe": "Quiet luxury for developer tools; warm dark, hairline detail, restraint as confidence",
+            "bestFor": "Developer tools, AI tools, B2B SaaS where \"serious + designed\" matters",
+            "defaultMode": "dark",
+            "heroTitle": "Build fast. Stay precise.",
+            "heroCopy": "同一结构，不同 token。切换配色和排版后，语气会从“理性克制”到“柔和人文”再到“强势宣言”明显变化。",
+            "ctaPrimary": "Request access",
+            "ctaSecondary": "View demo",
+            "signature": [
+                  "Hairline 1px borders in `rgba(255,255,255,0.06)` separating every panel, everywhere",
+                  "Selective accent use — purple appears on focused / active states, on tiny pills, on key brand surfaces; never on body backgrounds",
+                  "Inline code styled with monospaced font and dim background `#1E1F25`, color `#A78BFA`",
+                  "Subtle gradient meshes in the hero (extremely controlled saturation, < 8% opacity) — *not* the bright purple-pink-blue AI cliché"
+            ],
+            "avoid": [
+                  "Emoji",
+                  "Bouncy springs or elastic easings",
+                  "More than one saturated color (Linear's purple is the only accent)",
+                  "Border-radius above 16"
+            ],
+            "spacing": "4 / 8 / 12 / 16 / 24 / 40 / 64 / 96",
+            "motion": "ease-out around 150ms for hover, 350–450ms for layout moves with a quint curve (e.g., the famous cubic-bezier(0.22, 1, 0.36, 1)). State changes feel \"snappy but not bouncy.\"",
+            "fonts": {
+                  "display": "'Inter Tight', 'Inter', 'Noto Sans SC', sans-serif",
+                  "body": "'Inter', 'Noto Sans SC', sans-serif",
+                  "ui": "'Inter', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 620,
+                  "bodyLine": 1.58,
+                  "labelLetter": "0.12em",
+                  "titleTrack": "-0.02em"
+            },
+            "radius": {
+                  "sm": 6,
+                  "md": 12,
+                  "lg": 16
+            },
+            "modes": {
+                  "dark": {
+                        "--bg": "#08090A",
+                        "--surface1": "#16171C",
+                        "--surface2": "#1E1F25",
+                        "--surface3": "#26272E",
+                        "--line": "rgba(255,255,255,0.06)",
+                        "--text-main": "#F7F8F8",
+                        "--text-sub": "#9CA3AF",
+                        "--text-muted": "#6B7280",
+                        "--accent": "#5E6AD2",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(94,106,210,0.24)",
+                        "--accent-ring": "rgba(94,106,210,0.34)",
+                        "--hero-glow": "rgba(94,106,210,0.30)",
+                        "--button-bg": "#1E1F25",
+                        "--button-bg-hover": "#26272E",
+                        "--button-bg-active": "#35363D",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  },
+                  "light": {
+                        "--bg": "#E6E6E6",
+                        "--surface1": "#E1E1E1",
+                        "--surface2": "#DADADA",
+                        "--surface3": "#D1D1D1",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#5E6AD2",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(94,106,210,0.16)",
+                        "--accent-ring": "rgba(94,106,210,0.24)",
+                        "--hero-glow": "rgba(94,106,210,0.18)",
+                        "--button-bg": "#DADADA",
+                        "--button-bg-hover": "#D1D1D1",
+                        "--button-bg-active": "#C2C2C2",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  }
+            }
+      },
+      "mailchimp-freddie": {
+            "name": "Mailchimp",
+            "school": "Warm Humanist",
+            "vibe": "Hand-drawn marks, warm yellow, personality in microcopy",
+            "bestFor": "Small-business tools, creator products, community / education / approachable B2C",
+            "defaultMode": "light",
+            "heroTitle": "Mailchimp",
+            "heroCopy": "Hand-drawn marks, warm yellow, personality in microcopy 适合：Small-business tools, creator products, community / education / approachable B2C",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Freddie-style hand-drawn illustrations (winking mascot, line-drawn characters with personality) — never AI-generated, must be commissioned or use a single illustrator's hand",
+                  "Yellow flood-fill section backgrounds breaking up the page",
+                  "Pill-shaped buttons with a 2–3px black outline (Memphis-style)",
+                  "Personality in microcopy (\"Send better email\" not \"Optimize delivery metrics\")"
+            ],
+            "avoid": [
+                  "Pure black anywhere (the recipe is warm-near-black)",
+                  "Stock illustrations — the hand-drawn style is the differentiator",
+                  "More than 3 colors visible at once (yellow + ink + one accent)",
+                  "Cold corporate microcopy"
+            ],
+            "spacing": "4 / 8 / 16 / 24 / 40 / 64 — generous but not airy",
+            "motion": "bouncy welcomed. Spring physics on hover lifts, friendly easings.",
+            "fonts": {
+                  "display": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 620,
+                  "bodyLine": 1.62,
+                  "labelLetter": "0.12em",
+                  "titleTrack": "-0.018em"
+            },
+            "radius": {
+                  "sm": 8,
+                  "md": 16,
+                  "lg": 24
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#FFE01B",
+                        "--surface1": "#FFFFFF",
+                        "--surface2": "#241C15",
+                        "--surface3": "#FBEFE3",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#241C15",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#FF4D74",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(255,77,116,0.16)",
+                        "--accent-ring": "rgba(255,77,116,0.24)",
+                        "--hero-glow": "rgba(255,77,116,0.18)",
+                        "--button-bg": "#241C15",
+                        "--button-bg-hover": "#FBEFE3",
+                        "--button-bg-active": "#E9DED3",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  },
+                  "dark": {
+                        "--bg": "#292404",
+                        "--surface1": "#3E3A1D",
+                        "--surface2": "#504B31",
+                        "--surface3": "#615D45",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#FF4D74",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(255,77,116,0.24)",
+                        "--accent-ring": "rgba(255,77,116,0.34)",
+                        "--hero-glow": "rgba(255,77,116,0.30)",
+                        "--button-bg": "#504B31",
+                        "--button-bg-hover": "#615D45",
+                        "--button-bg-active": "#6C6852",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  }
+            }
+      },
+      "mid-century-modern": {
+            "name": "Mid-Century Modern",
+            "school": "Specialty / Genre (also touches Information Architecture)",
+            "vibe": "1950s–60s American graphic modernism — geometric shapes, considered hand-feel, jazz-album confidence",
+            "bestFor": "Cultural / film / publishing identity, premium consumer brands with heritage claim, \"tasteful sophistication\"",
+            "defaultMode": "light",
+            "heroTitle": "Mid-Century Modern",
+            "heroCopy": "1950s–60s American graphic modernism — geometric shapes, considered hand-feel, jazz-album confidence 适合：Cultural / film / publishing identity, premium consumer brands with heritage claim, \"tasteful sophistication\"",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Geometric shape compositions — a single big circle, a triangle, a half-moon — as the primary visual",
+                  "Hand-cut paper feel (shapes have slightly imperfect edges, suggesting they were cut and pasted)",
+                  "Type integrated with the shapes (a headline curving around a circle, or sitting *inside* a colored block)",
+                  "A single illustrative motif repeated (a stylized bird, an abstract figure) tying the piece together"
+            ],
+            "avoid": [
+                  "Gradients — mid-century is flat color",
+                  "Photography as the lead visual (illustration leads; photography supports)",
+                  "More than 3 colors per piece",
+                  "Rounded / soft-corner UI"
+            ],
+            "spacing": "structured grid; 4 / 8 / 16 / 24 / 32 / 48",
+            "motion": "minimal. Shapes slide into place on a single beat, like a Saul Bass title sequence.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 740,
+                  "bodyLine": 1.5,
+                  "labelLetter": "0.1em",
+                  "titleTrack": "-0.04em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#EBE3D2",
+                        "--surface1": "#D9A441",
+                        "--surface2": "#3D6E70",
+                        "--surface3": "#1A1A18",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#1A1A18",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#EBE3D2",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(235,227,210,0.16)",
+                        "--accent-ring": "rgba(235,227,210,0.24)",
+                        "--hero-glow": "rgba(235,227,210,0.18)",
+                        "--button-bg": "#3D6E70",
+                        "--button-bg-hover": "#1A1A18",
+                        "--button-bg-active": "#181816",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#262422",
+                        "--surface1": "#3C3A38",
+                        "--surface2": "#4D4B4A",
+                        "--surface3": "#5E5D5B",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#EBE3D2",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(235,227,210,0.24)",
+                        "--accent-ring": "rgba(235,227,210,0.34)",
+                        "--hero-glow": "rgba(235,227,210,0.30)",
+                        "--button-bg": "#4D4B4A",
+                        "--button-bg-hover": "#5E5D5B",
+                        "--button-bg-active": "#696866",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "monocle-magazine": {
+            "name": "Monocle Magazine",
+            "school": "Editorial / Minimalist",
+            "vibe": "International, considered, magazine-grade kicker / headline / dek hierarchy",
+            "bestFor": "Editorial, travel / hospitality, journals, considered lifestyle publications",
+            "defaultMode": "light",
+            "heroTitle": "Monocle Magazine",
+            "heroCopy": "International, considered, magazine-grade kicker / headline / dek hierarchy 适合：Editorial, travel / hospitality, journals, considered lifestyle publications",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Three-deck hierarchy: tiny red kicker → bold serif headline → italic serif dek",
+                  "Multi-column body copy (2–3 columns) with hairline column rules",
+                  "Numbered features (`Feature 04 — Lisbon`) and small numerals in the margin",
+                  "Lead photograph cropped tight at one edge, headline tucked into the empty negative space"
+            ],
+            "avoid": [
+                  "Sans-serif headlines — Monocle's signature is the serif voice",
+                  "Stock photography — the recipe requires commissioned-feeling photography (warm, peopled, place-rich)",
+                  "Card grids — this is magazine spread thinking, not SaaS thinking",
+                  "More than one accent color (the editorial red is enough)"
+            ],
+            "spacing": "4 / 8 / 16 / 24 / 32 / 48 / 96. Multi-column work uses tight gutters (16–24px between columns).",
+            "motion": "minimal. Page-turn fades. Slow Ken Burns on lead photographs.",
+            "fonts": {
+                  "display": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "body": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 540,
+                  "bodyLine": 1.66,
+                  "labelLetter": "0.14em",
+                  "titleTrack": "-0.012em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#F2EFE7",
+                        "--surface1": "#1A1A1A",
+                        "--surface2": "#C7322E",
+                        "--surface3": "#5E6347",
+                        "--line": "#C8C2B0",
+                        "--text-main": "#1A1A1A",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#C7322E",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(199,50,46,0.16)",
+                        "--accent-ring": "rgba(199,50,46,0.24)",
+                        "--hero-glow": "rgba(199,50,46,0.18)",
+                        "--button-bg": "#C7322E",
+                        "--button-bg-hover": "#5E6347",
+                        "--button-bg-active": "#575C42",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#272625",
+                        "--surface1": "#3D3C3B",
+                        "--surface2": "#4E4D4C",
+                        "--surface3": "#5F5E5E",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#C7322E",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(199,50,46,0.24)",
+                        "--accent-ring": "rgba(199,50,46,0.34)",
+                        "--hero-glow": "rgba(199,50,46,0.30)",
+                        "--button-bg": "#4E4D4C",
+                        "--button-bg-hover": "#5F5E5E",
+                        "--button-bg-active": "#6A6969",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "muji-kenya-hara": {
+            "name": "MUJI / Kenya Hara",
+            "school": "Editorial / Minimalist",
+            "vibe": "Emptiness as fullness, off-white as a value, near-silence",
+            "bestFor": "Premium quiet positioning, lifestyle goods, \"everyday craft\" identity",
+            "defaultMode": "light",
+            "heroTitle": "MUJI / Kenya Hara",
+            "heroCopy": "Emptiness as fullness, off-white as a value, near-silence 适合：Premium quiet positioning, lifestyle goods, \"everyday craft\" identity",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "60–80% of the page is empty space — content lives in a narrow column, far from edges",
+                  "One product image per \"screen\", small relative to the page, captioned plainly",
+                  "Tiny labels (10–11px, letter-spaced) describing what each section is — \"01 — Cotton\" — never headlines that shout",
+                  "Square-bracket-style asides, kept neutral"
+            ],
+            "avoid": [
+                  "Any saturated color other than the MUJI red as a corner mark",
+                  "Drop shadows, glows, gradients of any kind",
+                  "Tabs, accordions, mega-menus, sticky banners",
+                  "\"Above the fold\" thinking — MUJI lets the eye start in the middle of the page"
+            ],
+            "spacing": "8 / 16 / 32 / 48 / 96 / 160 / 240. The big numbers matter — 240px between sections is normal.",
+            "motion": "imperceptible. Fades over 600–900ms. Nothing translates more than a few px. Never bouncy.",
+            "fonts": {
+                  "display": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "body": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 540,
+                  "bodyLine": 1.66,
+                  "labelLetter": "0.14em",
+                  "titleTrack": "-0.012em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#F4F2EC",
+                        "--surface1": "#FFFFFF",
+                        "--surface2": "#2A2A28",
+                        "--surface3": "#000000",
+                        "--line": "#D9D6CD",
+                        "--text-main": "#2A2A28",
+                        "--text-sub": "#7C7B76",
+                        "--text-muted": "#74829B",
+                        "--accent": "#C8161D",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(200,22,29,0.16)",
+                        "--accent-ring": "rgba(200,22,29,0.24)",
+                        "--hero-glow": "rgba(200,22,29,0.18)",
+                        "--button-bg": "#2A2A28",
+                        "--button-bg-hover": "#000000",
+                        "--button-bg-active": "#000000",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#272726",
+                        "--surface1": "#3D3D3C",
+                        "--surface2": "#4E4E4D",
+                        "--surface3": "#5F5F5E",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#C8161D",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(200,22,29,0.24)",
+                        "--accent-ring": "rgba(200,22,29,0.34)",
+                        "--hero-glow": "rgba(200,22,29,0.30)",
+                        "--button-bg": "#4E4E4D",
+                        "--button-bg-hover": "#5F5F5E",
+                        "--button-bg-active": "#6A6A69",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "notion-pre-ai": {
+            "name": "Notion",
+            "school": "Modern Tool / Builder SaaS (warm-leaning, near Humanist border)",
+            "vibe": "Friendly serif headline + emoji as first-class design element + soft cream + black ink",
+            "bestFor": "Productivity tools for non-engineers, collaborative software, \"your second brain\" products",
+            "defaultMode": "light",
+            "heroTitle": "Notion",
+            "heroCopy": "Friendly serif headline + emoji as first-class design element + soft cream + black ink 适合：Productivity tools for non-engineers, collaborative software, \"your second brain\" products",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Section headers prefixed with a single emoji icon (`📖 Notes`, `🌱 Ideas`) — the emoji *is* the visual hierarchy",
+                  "Hand-drawn doodles or simple line illustrations integrated into the hero (Notion's signature illustration style)",
+                  "Block-based content metaphor visible in the layout — content reads like draggable cards rather than columns",
+                  "Color-tagged soft pills for category labels (mint = active, peach = idea, etc.)"
+            ],
+            "avoid": [
+                  "Too many emoji in close proximity (one per section header is the recipe, not five)",
+                  "Dark mode unless explicitly required (Notion's identity is light)",
+                  "Sans-serif headlines — the friendly serif is the differentiator",
+                  "Aggressive CTAs — Notion's hero CTA reads as an invitation, not a demand"
+            ],
+            "spacing": "4 / 8 / 16 / 24 / 40 / 64",
+            "motion": "gentle ease-out around 200–300ms. Hover lifts cards by 2–4px with a soft shadow expansion.",
+            "fonts": {
+                  "display": "'Inter Tight', 'Inter', 'Noto Sans SC', sans-serif",
+                  "body": "'Inter', 'Noto Sans SC', sans-serif",
+                  "ui": "'Inter', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 620,
+                  "bodyLine": 1.58,
+                  "labelLetter": "0.12em",
+                  "titleTrack": "-0.02em"
+            },
+            "radius": {
+                  "sm": 4,
+                  "md": 8,
+                  "lg": 16
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#FFFFFF",
+                        "--surface1": "#F7F6F3",
+                        "--surface2": "#37352F",
+                        "--surface3": "#787774",
+                        "--line": "#E9E9E7",
+                        "--text-main": "#37352F",
+                        "--text-sub": "#787774",
+                        "--text-muted": "#74829B",
+                        "--accent": "#E4F4F1",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(228,244,241,0.16)",
+                        "--accent-ring": "rgba(228,244,241,0.24)",
+                        "--hero-glow": "rgba(228,244,241,0.18)",
+                        "--button-bg": "#37352F",
+                        "--button-bg-hover": "#787774",
+                        "--button-bg-active": "#706F6C",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  },
+                  "dark": {
+                        "--bg": "#292929",
+                        "--surface1": "#3E3E3E",
+                        "--surface2": "#505050",
+                        "--surface3": "#616161",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#E4F4F1",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(228,244,241,0.24)",
+                        "--accent-ring": "rgba(228,244,241,0.34)",
+                        "--hero-glow": "rgba(228,244,241,0.30)",
+                        "--button-bg": "#505050",
+                        "--button-bg-hover": "#616161",
+                        "--button-bg-active": "#6C6C6C",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  }
+            }
+      },
+      "nyt-the-daily": {
+            "name": "New York Times Editorial",
+            "school": "Information Architecture",
+            "vibe": "Authoritative broadsheet, generations of typographic craft",
+            "bestFor": "Longform editorial, news / journalism products, narrative explainers",
+            "defaultMode": "light",
+            "heroTitle": "New York Times Editorial",
+            "heroCopy": "Authoritative broadsheet, generations of typographic craft 适合：Longform editorial, news / journalism products, narrative explainers",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Three-deck hierarchy: tiny eyebrow (\"OPINION\" / \"ANALYSIS\" / \"INVESTIGATION\" in small-caps sans) → bold serif headline → italic serif standfirst",
+                  "Byline + timestamp block in sans below the headline, always",
+                  "Pull-quotes set in italic serif at 1.5–2× body size, with hairline rules above and below",
+                  "Multi-column body copy on wide viewports; single column on mobile (always readable)"
+            ],
+            "avoid": [
+                  "Sans-serif headlines (the recipe's signature is the serif voice)",
+                  "Card grids of articles — NYT lays articles out as a front page, with hierarchy by size",
+                  "Pretty UI buttons in the body of articles",
+                  "Centered alignment for body (left-aligned justified is the recipe)"
+            ],
+            "spacing": "4 / 8 / 16 / 24 / 32 / 48 / 96. Multi-column grids for stories.",
+            "motion": "minimal — sticky bylines, lazy-loaded images fading in, slow zoom on hero photo over 8–15s.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 740,
+                  "bodyLine": 1.5,
+                  "labelLetter": "0.1em",
+                  "titleTrack": "-0.04em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#F7F7F7",
+                        "--surface1": "#121212",
+                        "--surface2": "#666666",
+                        "--surface3": "#D0021B",
+                        "--line": "#E2E2E2",
+                        "--text-main": "#121212",
+                        "--text-sub": "#666666",
+                        "--text-muted": "#74829B",
+                        "--accent": "#D0021B",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(208,2,27,0.16)",
+                        "--accent-ring": "rgba(208,2,27,0.24)",
+                        "--hero-glow": "rgba(208,2,27,0.18)",
+                        "--button-bg": "#666666",
+                        "--button-bg-hover": "#D0021B",
+                        "--button-bg-active": "#C10219",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#282828",
+                        "--surface1": "#3E3E3E",
+                        "--surface2": "#4F4F4F",
+                        "--surface3": "#606060",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#D0021B",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(208,2,27,0.24)",
+                        "--accent-ring": "rgba(208,2,27,0.34)",
+                        "--hero-glow": "rgba(208,2,27,0.30)",
+                        "--button-bg": "#4F4F4F",
+                        "--button-bg-hover": "#606060",
+                        "--button-bg-active": "#6B6B6B",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "pentagram": {
+            "name": "Pentagram / Paula Scher",
+            "school": "Information Architecture",
+            "vibe": "Bold typography as image; type does the visual work; everything else recedes",
+            "bestFor": "B2B identity, cultural institutions, \"we mean business\" moments",
+            "defaultMode": "light",
+            "heroTitle": "Make type do the work.",
+            "heroCopy": "Pentagram 路线把视觉权重交给字重、尺度和网格。图形退后，信息结构站到前排。",
+            "ctaPrimary": "Open brief",
+            "ctaSecondary": "Grid spec",
+            "signature": [
+                  "Headlines so large they touch (or visibly break past) the column edges",
+                  "Type as image — a single word or phrase at hero scale becomes the only graphic",
+                  "Color blocks (a flat rectangle of accent color) used as section dividers, often with a single huge number on them (`02`)",
+                  "Captions and metadata pinned to the grid in tiny precise type, often in the column gutter"
+            ],
+            "avoid": [
+                  "Photography as the visual lead (type leads, not photo) — exception: if there is a hero photo, it lives behind / under enormous type",
+                  "Multiple type families",
+                  "Gradients, shadows, decorative anything",
+                  "Card grids of content (Pentagram thinks in spreads, not cards)"
+            ],
+            "spacing": "strict 12-column grid, generous gutters (24–32px). Baseline-grid alignment of every text element.",
+            "motion": "typographic moves only — letters shift in, headlines slide on a baseline. No 3D, no bouncy, no parallax.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 740,
+                  "bodyLine": 1.5,
+                  "labelLetter": "0.1em",
+                  "titleTrack": "-0.04em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#000000",
+                        "--surface1": "#FFFFFF",
+                        "--surface2": "#1E3FFF",
+                        "--surface3": "#F4F1E7",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#1E3FFF",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(30,63,255,0.16)",
+                        "--accent-ring": "rgba(30,63,255,0.24)",
+                        "--hero-glow": "rgba(30,63,255,0.18)",
+                        "--button-bg": "#1E3FFF",
+                        "--button-bg-hover": "#F4F1E7",
+                        "--button-bg-active": "#E3E0D7",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#000000",
+                        "--surface1": "#1A1A1A",
+                        "--surface2": "#2E2E2E",
+                        "--surface3": "#424242",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#1E3FFF",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(30,63,255,0.24)",
+                        "--accent-ring": "rgba(30,63,255,0.34)",
+                        "--hero-glow": "rgba(30,63,255,0.30)",
+                        "--button-bg": "#2E2E2E",
+                        "--button-bg-hover": "#424242",
+                        "--button-bg-active": "#4F4F4F",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "raycast": {
+            "name": "Raycast",
+            "school": "Modern Tool / Builder SaaS",
+            "vibe": "Glassy command-palette aesthetic, color extensions for personality, keyboard-first culture",
+            "bestFor": "Productivity tools, command-palette / launcher products, dev utilities",
+            "defaultMode": "dark",
+            "heroTitle": "Raycast",
+            "heroCopy": "Glassy command-palette aesthetic, color extensions for personality, keyboard-first culture 适合：Productivity tools, command-palette / launcher products, dev utilities",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "A floating command-palette screenshot in the hero, slightly tilted, casting a generous cushioned shadow, with a blurred colorful gradient backdrop visible through it (glass)",
+                  "Every keyboard shortcut shown as a styled chip — `⌘` `↵` `⌥` set in a precision mono with a hairline border and dim background",
+                  "Bright per-extension colors used as small accent dots on tile cards (a Notion tile has a tiny lavender dot, a GitHub tile has a charcoal one)",
+                  "Sticky color-banded gradient backdrop behind the hero (oranges → magentas, but soft-focused)"
+            ],
+            "avoid": [
+                  "Too many bright extension colors on the same screen — they only work as small accents on a dark ground",
+                  "Solid bright-color buttons (Raycast buttons are usually translucent white pills with shortcut chips)",
+                  "Pure monochrome scenes — Raycast leans on color *just enough* to feel playful"
+            ],
+            "spacing": "4 / 8 / 12 / 16 / 24 / 40 / 64",
+            "motion": "bouncy welcomed for key moments (the palette appearing, hover lift) — spring physics with mild overshoot. Otherwise quick 150ms ease-out.",
+            "fonts": {
+                  "display": "'Inter Tight', 'Inter', 'Noto Sans SC', sans-serif",
+                  "body": "'Inter', 'Noto Sans SC', sans-serif",
+                  "ui": "'Inter', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 620,
+                  "bodyLine": 1.58,
+                  "labelLetter": "0.12em",
+                  "titleTrack": "-0.02em"
+            },
+            "radius": {
+                  "sm": 8,
+                  "md": 12,
+                  "lg": 16
+            },
+            "modes": {
+                  "dark": {
+                        "--bg": "#0F0F11",
+                        "--surface1": "#FFFFFF",
+                        "--surface2": "#B0B3B8",
+                        "--surface3": "#FF6363",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#FFFFFF",
+                        "--text-sub": "#B0B3B8",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#FF6363",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(255,99,99,0.24)",
+                        "--accent-ring": "rgba(255,99,99,0.34)",
+                        "--hero-glow": "rgba(255,99,99,0.30)",
+                        "--button-bg": "#B0B3B8",
+                        "--button-bg-hover": "#FF6363",
+                        "--button-bg-active": "#FF6E6E",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  },
+                  "light": {
+                        "--bg": "#E7E7E7",
+                        "--surface1": "#E2E2E2",
+                        "--surface2": "#DBDBDB",
+                        "--surface3": "#D2D2D2",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#FF6363",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(255,99,99,0.16)",
+                        "--accent-ring": "rgba(255,99,99,0.24)",
+                        "--hero-glow": "rgba(255,99,99,0.18)",
+                        "--button-bg": "#DBDBDB",
+                        "--button-bg-hover": "#D2D2D2",
+                        "--button-bg-active": "#C3C3C3",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  }
+            }
+      },
+      "resn-storytelling": {
+            "name": "Resn",
+            "school": "Motion / Experimental",
+            "vibe": "Surprise as the reward; the page tells a story to those who scroll",
+            "bestFor": "Brand storytelling, agency portfolios, campaign microsites",
+            "defaultMode": "dark",
+            "heroTitle": "Resn",
+            "heroCopy": "Surprise as the reward; the page tells a story to those who scroll 适合：Brand storytelling, agency portfolios, campaign microsites",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Scroll triggers reveal narrative beats — a character moves across the screen, a product is unveiled, a punchline lands",
+                  "Easter eggs hidden for repeat visitors",
+                  "Cursor-reactive surface materials (a hover changes a texture, an audio cue plays)",
+                  "Multi-scene composition — each section is treated as a film scene with its own art direction"
+            ],
+            "avoid": [
+                  "Bloating with too many beats — Resn's recipe is \"fewer, better\" beats",
+                  "Pure decoration without narrative — every motion moment should advance the story",
+                  "Forgetting the punchline — the recipe needs a payoff scene"
+            ],
+            "spacing": "irregular and composition-driven; not grid-strict",
+            "motion": "long-form choreography — a single page might tell a 90-second story across 8–12 scroll triggers, with payoffs at specific moments",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 700,
+                  "bodyLine": 1.52,
+                  "labelLetter": "0.11em",
+                  "titleTrack": "-0.026em"
+            },
+            "radius": {
+                  "sm": 4,
+                  "md": 10,
+                  "lg": 14
+            },
+            "modes": {
+                  "dark": {
+                        "--bg": "#0D1018",
+                        "--surface1": "#25282F",
+                        "--surface2": "#393B42",
+                        "--surface3": "#4C4E54",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#5E6AD2",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(94,106,210,0.24)",
+                        "--accent-ring": "rgba(94,106,210,0.34)",
+                        "--hero-glow": "rgba(94,106,210,0.30)",
+                        "--button-bg": "#393B42",
+                        "--button-bg-hover": "#4C4E54",
+                        "--button-bg-active": "#595A60",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  },
+                  "light": {
+                        "--bg": "#E7E7E8",
+                        "--surface1": "#E2E2E3",
+                        "--surface2": "#DBDBDC",
+                        "--surface3": "#D2D2D3",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#5E6AD2",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(94,106,210,0.16)",
+                        "--accent-ring": "rgba(94,106,210,0.24)",
+                        "--hero-glow": "rgba(94,106,210,0.18)",
+                        "--button-bg": "#DBDBDC",
+                        "--button-bg-hover": "#D2D2D3",
+                        "--button-bg-active": "#C3C3C4",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  }
+            }
+      },
+      "stripe-press": {
+            "name": "Stripe Press",
+            "school": "Warm Humanist (with editorial bones)",
+            "vibe": "Books as objects, cream + ink, warm photography, the kind of design only a successful infrastructure company funds",
+            "bestFor": "Editorial / publishing, longform features, \"books and ideas\" products",
+            "defaultMode": "light",
+            "heroTitle": "Stripe Press",
+            "heroCopy": "Books as objects, cream + ink, warm photography, the kind of design only a successful infrastructure company funds 适合：Editorial / publishing, longform features, \"books and ideas\" products",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Book-cover photography as hero — the actual physical object photographed on cream paper with a warm raking light and an honest shadow",
+                  "Wide-set serif italic for emphasis, set 1.5–2× body size",
+                  "Author / chapter quotes in oversized italic serif, hung against a wide margin",
+                  "Cloth-textured backgrounds for section breaks (subtle textile pattern at low opacity)"
+            ],
+            "avoid": [
+                  "Pure white grounds (the warm cream is part of the recipe)",
+                  "Sans-serif body type (the editorial serif is the signature)",
+                  "Card grids of books — Stripe Press lays each book out as a feature, not a tile",
+                  "Cold neutral gray — every gray here has a warm cast"
+            ],
+            "spacing": "4 / 8 / 16 / 24 / 32 / 48 / 96. Editorial breathing room.",
+            "motion": "slow, slow, slow. Crossfades over 1–2 seconds. Books rotate gently in 3D on hover (~15° max). Ken Burns on hero photography (~20s).",
+            "fonts": {
+                  "display": "'Noto Serif SC', Georgia, 'Times New Roman', serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 620,
+                  "bodyLine": 1.62,
+                  "labelLetter": "0.12em",
+                  "titleTrack": "-0.018em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#F1ECDE",
+                        "--surface1": "#E6DCC4",
+                        "--surface2": "#1A1A18",
+                        "--surface3": "#736D5A",
+                        "--line": "#C8BEA4",
+                        "--text-main": "#1A1A18",
+                        "--text-sub": "#736D5A",
+                        "--text-muted": "#74829B",
+                        "--accent": "#1B4B5A",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(27,75,90,0.16)",
+                        "--accent-ring": "rgba(27,75,90,0.24)",
+                        "--hero-glow": "rgba(27,75,90,0.18)",
+                        "--button-bg": "#1A1A18",
+                        "--button-bg-hover": "#736D5A",
+                        "--button-bg-active": "#6B6554",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  },
+                  "dark": {
+                        "--bg": "#272624",
+                        "--surface1": "#3D3C3A",
+                        "--surface2": "#4E4D4B",
+                        "--surface3": "#5F5E5D",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#1B4B5A",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(27,75,90,0.24)",
+                        "--accent-ring": "rgba(27,75,90,0.34)",
+                        "--hero-glow": "rgba(27,75,90,0.30)",
+                        "--button-bg": "#4E4D4B",
+                        "--button-bg-hover": "#5F5E5D",
+                        "--button-bg-active": "#6A6968",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  }
+            }
+      },
+      "tufte-dataink": {
+            "name": "Edward Tufte / Maximum Data-Ink",
+            "school": "Information Architecture",
+            "vibe": "Every pixel earns its place; the chart is the page",
+            "bestFor": "Analytical reports, scientific publications, data-led storytelling",
+            "defaultMode": "light",
+            "heroTitle": "Edward Tufte / Maximum Data-Ink",
+            "heroCopy": "Every pixel earns its place; the chart is the page 适合：Analytical reports, scientific publications, data-led storytelling",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Sparklines inline with body copy (a tiny chart embedded in a sentence)",
+                  "Side-notes (marginalia) used heavily — annotations live in the right margin, not in tooltips",
+                  "Charts have no chart-junk: no gridlines except faint ones, no border boxes, no 3D, no legends if direct labels work",
+                  "Small multiples — a 3×3 grid of the same chart with different data"
+            ],
+            "avoid": [
+                  "Pie charts (Tufte would not approve)",
+                  "3D anything",
+                  "Gridlines darker than `#D8D2C2`",
+                  "Multiple chart types on the same page when one would do"
+            ],
+            "spacing": "tight. 4 / 8 / 12 / 16 / 24 / 48. Margins are filled with side-notes, not whitespace.",
+            "motion": "none. The page is meant to be read still.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 740,
+                  "bodyLine": 1.5,
+                  "labelLetter": "0.1em",
+                  "titleTrack": "-0.04em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#FBFAF6",
+                        "--surface1": "#1B1B1A",
+                        "--surface2": "#A6300E",
+                        "--surface3": "#3E4A5C",
+                        "--line": "#D8D2C2",
+                        "--text-main": "#1B1B1A",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#A6300E",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(166,48,14,0.16)",
+                        "--accent-ring": "rgba(166,48,14,0.24)",
+                        "--hero-glow": "rgba(166,48,14,0.18)",
+                        "--button-bg": "#A6300E",
+                        "--button-bg-hover": "#3E4A5C",
+                        "--button-bg-active": "#3A4556",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#282827",
+                        "--surface1": "#3E3E3D",
+                        "--surface2": "#4F4F4E",
+                        "--surface3": "#60605F",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#A6300E",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(166,48,14,0.24)",
+                        "--accent-ring": "rgba(166,48,14,0.34)",
+                        "--hero-glow": "rgba(166,48,14,0.30)",
+                        "--button-bg": "#4F4F4E",
+                        "--button-bg-hover": "#60605F",
+                        "--button-bg-active": "#6B6B6A",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "vercel-mesh": {
+            "name": "Vercel",
+            "school": "Modern Tool / Builder SaaS (also touches Motion / Experimental)",
+            "vibe": "Black-and-white precision broken by a single shimmering gradient mesh",
+            "bestFor": "Platform / infrastructure tools, AI tools, deeply technical products that want to feel modern but not AI-cliché",
+            "defaultMode": "dark",
+            "heroTitle": "Vercel",
+            "heroCopy": "Black-and-white precision broken by a single shimmering gradient mesh 适合：Platform / infrastructure tools, AI tools, deeply technical products that want to feel modern but not AI-cliché",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "One full-bleed gradient mesh in the hero — diffuse, dreamy, feathered to black edges",
+                  "Otherwise the page is black-and-white with hairline detail and monospace accents",
+                  "Deploy / terminal log readouts as a hero element (real-feeling, not lorem)",
+                  "Animated mesh on hover for cards (the card \"lights up\" with a soft glow from below)"
+            ],
+            "avoid": [
+                  "Bright saturated purple → pink gradients (that's the AI cliché the recipe is *replacing*)",
+                  "More than one mesh per page",
+                  "Glow on every component (selective use — one hero, maybe one section break, that's it)",
+                  "Colored buttons (the brand button is white)"
+            ],
+            "spacing": "4 / 8 / 16 / 24 / 40 / 64 / 96 / 128",
+            "motion": "snappy ease-out (cubic-bezier(0.16, 1, 0.3, 1)), 200ms hovers, 500–700ms for layout. The mesh itself slowly drifts (10–20s loop).",
+            "fonts": {
+                  "display": "'Inter Tight', 'Inter', 'Noto Sans SC', sans-serif",
+                  "body": "'Inter', 'Noto Sans SC', sans-serif",
+                  "ui": "'Inter', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 620,
+                  "bodyLine": 1.58,
+                  "labelLetter": "0.12em",
+                  "titleTrack": "-0.02em"
+            },
+            "radius": {
+                  "sm": 8,
+                  "md": 12,
+                  "lg": 16
+            },
+            "modes": {
+                  "dark": {
+                        "--bg": "#000000",
+                        "--surface1": "#0A0A0A",
+                        "--surface2": "#111111",
+                        "--surface3": "#1F1F1F",
+                        "--line": "rgba(255,255,255,0.08)",
+                        "--text-main": "#EDEDED",
+                        "--text-sub": "#888888",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#FFFFFF",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(255,255,255,0.24)",
+                        "--accent-ring": "rgba(255,255,255,0.34)",
+                        "--hero-glow": "rgba(255,255,255,0.30)",
+                        "--button-bg": "#111111",
+                        "--button-bg-hover": "#1F1F1F",
+                        "--button-bg-active": "#2F2F2F",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  },
+                  "light": {
+                        "--bg": "#E6E6E6",
+                        "--surface1": "#E1E1E1",
+                        "--surface2": "#DADADA",
+                        "--surface3": "#D1D1D1",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#FFFFFF",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(255,255,255,0.16)",
+                        "--accent-ring": "rgba(255,255,255,0.24)",
+                        "--hero-glow": "rgba(255,255,255,0.18)",
+                        "--button-bg": "#DADADA",
+                        "--button-bg-hover": "#D1D1D1",
+                        "--button-bg-active": "#C2C2C2",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  }
+            }
+      },
+      "vignelli-swiss-helvetica": {
+            "name": "Vignelli / Swiss International",
+            "school": "Information Architecture",
+            "vibe": "Strict grid, Helvetica throughout, \"six typefaces are enough\"",
+            "bestFor": "Wayfinding / transit systems, institutional identity, deeply ordered information",
+            "defaultMode": "light",
+            "heroTitle": "Vignelli / Swiss International",
+            "heroCopy": "Strict grid, Helvetica throughout, \"six typefaces are enough\" 适合：Wayfinding / transit systems, institutional identity, deeply ordered information",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "A bold horizontal or vertical color bar carries the section header in white Helvetica",
+                  "The grid is **visible** when it helps — column gutters sometimes drawn as faint lines",
+                  "Information sets (data, schedules, lists) get tabular layouts with strict baseline alignment",
+                  "Body copy is left-aligned in a single readable measure (~60–70 characters); never centered"
+            ],
+            "avoid": [
+                  "Serifs entirely",
+                  "Color combinations other than ink + ground + one accent",
+                  "Italic, drop shadows, gradients, any softness",
+                  "\"Friendly\" copywriting tone — Swiss is matter-of-fact"
+            ],
+            "spacing": "8px baseline grid, 12-column layout, generous baseline-to-baseline spacing equal to or greater than the type size.",
+            "motion": "none, or instant. Swiss design is static by nature; if anything moves, it moves like signage being rotated into place.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 740,
+                  "bodyLine": 1.5,
+                  "labelLetter": "0.1em",
+                  "titleTrack": "-0.04em"
+            },
+            "radius": {
+                  "sm": 0,
+                  "md": 0,
+                  "lg": 0
+            },
+            "modes": {
+                  "light": {
+                        "--bg": "#000000",
+                        "--surface1": "#FFFFFF",
+                        "--surface2": "#E2231A",
+                        "--surface3": "#F5C518",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#E2231A",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(226,35,26,0.16)",
+                        "--accent-ring": "rgba(226,35,26,0.24)",
+                        "--hero-glow": "rgba(226,35,26,0.18)",
+                        "--button-bg": "#E2231A",
+                        "--button-bg-hover": "#F5C518",
+                        "--button-bg-active": "#E4B716",
+                        "--shadow-elev": "none"
+                  },
+                  "dark": {
+                        "--bg": "#000000",
+                        "--surface1": "#1A1A1A",
+                        "--surface2": "#2E2E2E",
+                        "--surface3": "#424242",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#E2231A",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(226,35,26,0.24)",
+                        "--accent-ring": "rgba(226,35,26,0.34)",
+                        "--hero-glow": "rgba(226,35,26,0.30)",
+                        "--button-bg": "#2E2E2E",
+                        "--button-bg-hover": "#424242",
+                        "--button-bg-active": "#4F4F4F",
+                        "--shadow-elev": "none"
+                  }
+            }
+      },
+      "y2k-retrofuturism": {
+            "name": "Y2K / Frutiger Aero Retrofuturism",
+            "school": "Specialty / Genre",
+            "vibe": "Late-90s / early-2000s techno-optimism: chrome, glassy bubbles, jelly translucency, lens flare",
+            "bestFor": "Fashion / music / nostalgia-coded products, creative campaigns, anything referencing 1999–2005 internet",
+            "defaultMode": "dark",
+            "heroTitle": "Y2K / Frutiger Aero Retrofuturism",
+            "heroCopy": "Late-90s / early-2000s techno-optimism: chrome, glassy bubbles, jelly translucency, lens flare 适合：Fashion / music / nostalgia-coded products, creative campaigns, anything referencing 1999–2005 internet",
+            "ctaPrimary": "Apply recipe",
+            "ctaSecondary": "View tokens",
+            "signature": [
+                  "Glassy translucent buttons with an inner top highlight (faking aqua / lozenge)",
+                  "Iridescent oil-slick gradients on hero / character imagery",
+                  "Chrome-effect type with sparkle overlays",
+                  "Lens flare or specular highlight on any glass surface"
+            ],
+            "avoid": [
+                  "Sharp corners",
+                  "Muted / earthy palettes — Y2K is bright and synthetic",
+                  "Restrained typography — Y2K is exuberant",
+                  "Anything that reads as \"tasteful 2020s minimalism\""
+            ],
+            "spacing": "4 / 8 / 16 / 24 — packed but bubbly",
+            "motion": "bouncy springs, glow pulses, lens flare sweeps. Anything that recalls early-Flash interactions.",
+            "fonts": {
+                  "display": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "body": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "ui": "'IBM Plex Sans', 'Noto Sans SC', sans-serif",
+                  "mono": "'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+            },
+            "metrics": {
+                  "displayWeight": 680,
+                  "bodyLine": 1.56,
+                  "labelLetter": "0.11em",
+                  "titleTrack": "-0.022em"
+            },
+            "radius": {
+                  "sm": 16,
+                  "md": 24,
+                  "lg": 32
+            },
+            "modes": {
+                  "dark": {
+                        "--bg": "#A3D5FF",
+                        "--surface1": "#E0E4EA",
+                        "--surface2": "#5FC9F8",
+                        "--surface3": "#FF66C4",
+                        "--line": "rgba(255,255,255,0.10)",
+                        "--text-main": "#F4F7FF",
+                        "--text-sub": "#A8B3CC",
+                        "--text-muted": "#7D889F",
+                        "--accent": "#5FC9F8",
+                        "--accent-ink": "#F7F8FF",
+                        "--accent-soft": "rgba(95,201,248,0.24)",
+                        "--accent-ring": "rgba(95,201,248,0.34)",
+                        "--hero-glow": "rgba(95,201,248,0.30)",
+                        "--button-bg": "#5FC9F8",
+                        "--button-bg-hover": "#FF66C4",
+                        "--button-bg-active": "#FF71C8",
+                        "--shadow-elev": "0 18px 50px rgba(0,0,0,0.48)"
+                  },
+                  "light": {
+                        "--bg": "#F6FBFF",
+                        "--surface1": "#F1F6FA",
+                        "--surface2": "#EAEEF2",
+                        "--surface3": "#E0E4E8",
+                        "--line": "rgba(16,23,41,0.14)",
+                        "--text-main": "#121829",
+                        "--text-sub": "#4F5D77",
+                        "--text-muted": "#74829B",
+                        "--accent": "#5FC9F8",
+                        "--accent-ink": "#FFFFFF",
+                        "--accent-soft": "rgba(95,201,248,0.16)",
+                        "--accent-ring": "rgba(95,201,248,0.24)",
+                        "--hero-glow": "rgba(95,201,248,0.18)",
+                        "--button-bg": "#EAEEF2",
+                        "--button-bg-hover": "#E0E4E8",
+                        "--button-bg-active": "#D0D4D8",
+                        "--shadow-elev": "0 12px 34px rgba(16,22,38,0.15)"
+                  }
+            }
+      }
+};
+
+    const tokenOrder = [
+      ['--bg', 'Ground'],
+      ['--surface1', 'Surface 1'],
+      ['--surface2', 'Surface 2'],
+      ['--surface3', 'Surface 3'],
+      ['--line', 'Hairline'],
+      ['--text-main', 'Text primary'],
+      ['--text-sub', 'Text secondary'],
+      ['--text-muted', 'Text muted'],
+      ['--accent', 'Accent']
+    ];
+
+    const recipeSelect = document.getElementById('recipeSelect');
+    const modeSelect = document.getElementById('modeSelect');
+    const densitySelect = document.getElementById('densitySelect');
+
+    const recipeName = document.getElementById('recipeName');
+    const recipeSchool = document.getElementById('recipeSchool');
+    const recipeVibe = document.getElementById('recipeVibe');
+    const recipeBestFor = document.getElementById('recipeBestFor');
+    const signatureList = document.getElementById('signatureList');
+    const avoidList = document.getElementById('avoidList');
+
+    const previewShell = document.getElementById('previewShell');
+    const previewKicker = document.getElementById('previewKicker');
+    const modeBadge = document.getElementById('modeBadge');
+    const heroTitle = document.getElementById('heroTitle');
+    const heroCopy = document.getElementById('heroCopy');
+    const ctaPrimary = document.getElementById('ctaPrimary');
+    const ctaSecondary = document.getElementById('ctaSecondary');
+
+    const tokenGrid = document.getElementById('tokenGrid');
+    const snippet = document.getElementById('snippet');
+
+    function renderList(node, items) {
+      node.innerHTML = items.map((item) => `<li>${item}</li>`).join('');
+    }
+
+    function schoolSortKey(school) {
+      const order = [
+        'Modern Tool / Builder SaaS',
+        'Editorial / Minimalist',
+        'Information Architecture',
+        'Motion / Experimental',
+        'Brutalist / Raw',
+        'Warm Humanist',
+        'Specialty / Genre'
+      ];
+      const hit = order.findIndex((prefix) => school.startsWith(prefix));
+      return hit === -1 ? order.length : hit;
+    }
+
+    function populateRecipeSelect() {
+      const entries = Object.entries(recipes).sort((a, b) => {
+        const schoolDiff = schoolSortKey(a[1].school) - schoolSortKey(b[1].school);
+        if (schoolDiff !== 0) return schoolDiff;
+        return a[1].name.localeCompare(b[1].name, 'zh-Hans-CN');
+      });
+
+      const groups = new Map();
+      for (const [key, recipe] of entries) {
+        if (!groups.has(recipe.school)) {
+          groups.set(recipe.school, []);
+        }
+        groups.get(recipe.school).push([key, recipe]);
+      }
+
+      recipeSelect.innerHTML = '';
+
+      for (const [school, list] of groups.entries()) {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = school;
+
+        for (const [key, recipe] of list) {
+          const option = document.createElement('option');
+          option.value = key;
+          option.textContent = recipe.name;
+          optgroup.appendChild(option);
+        }
+
+        recipeSelect.appendChild(optgroup);
+      }
+    }
+
+    function applyRecipe() {
+      const key = recipeSelect.value;
+      const recipe = recipes[key];
+      if (!recipe) return;
+
+      const requestedMode = modeSelect.value === 'recipe' ? recipe.defaultMode : modeSelect.value;
+      const chosenMode = recipe.modes[requestedMode]
+        ? requestedMode
+        : recipe.modes[recipe.defaultMode]
+          ? recipe.defaultMode
+          : Object.keys(recipe.modes)[0];
+      const palette = recipe.modes[chosenMode];
+
+      document.body.dataset.mode = chosenMode;
+      document.body.dataset.density = densitySelect.value;
+      previewShell.dataset.recipe = key;
+
+      for (const [varName, varValue] of Object.entries(palette)) {
+        document.documentElement.style.setProperty(varName, varValue);
+      }
+
+      document.documentElement.style.setProperty('--font-display', recipe.fonts.display);
+      document.documentElement.style.setProperty('--font-body', recipe.fonts.body);
+      document.documentElement.style.setProperty('--font-ui', recipe.fonts.ui);
+      document.documentElement.style.setProperty('--font-mono', recipe.fonts.mono);
+
+      document.documentElement.style.setProperty('--display-weight', recipe.metrics.displayWeight);
+      document.documentElement.style.setProperty('--body-line', recipe.metrics.bodyLine);
+      document.documentElement.style.setProperty('--label-letter', recipe.metrics.labelLetter);
+      document.documentElement.style.setProperty('--title-track', recipe.metrics.titleTrack);
+
+      document.documentElement.style.setProperty('--radius-sm', `${recipe.radius.sm}px`);
+      document.documentElement.style.setProperty('--radius-md', `${recipe.radius.md}px`);
+      document.documentElement.style.setProperty('--radius-lg', `${recipe.radius.lg}px`);
+
+      recipeName.textContent = recipe.name;
+      recipeSchool.textContent = recipe.school;
+      recipeVibe.textContent = recipe.vibe;
+      recipeBestFor.textContent = recipe.bestFor;
+      previewKicker.textContent = recipe.school;
+      modeBadge.textContent = chosenMode.toUpperCase();
+
+      heroTitle.textContent = recipe.heroTitle;
+      heroCopy.textContent = recipe.heroCopy;
+      ctaPrimary.textContent = recipe.ctaPrimary;
+      ctaSecondary.textContent = recipe.ctaSecondary;
+
+      renderList(signatureList, recipe.signature);
+      renderList(avoidList, recipe.avoid);
+
+      tokenGrid.innerHTML = tokenOrder
+        .map(
+          ([token, label]) => `
+            <article class="token-card">
+              <div class="swatch" style="--token-color: ${palette[token]}"></div>
+              <p class="token-name">${label}</p>
+              <p class="token-value">${palette[token]}</p>
+            </article>
+          `
+        )
+        .join('');
+
+      const snippetLines = [
+        ':root {',
+        ...tokenOrder.map(([token]) => `  ${token}: ${palette[token]};`),
+        `  --font-display: ${recipe.fonts.display};`,
+        `  --font-body: ${recipe.fonts.body};`,
+        `  --radius-sm: ${recipe.radius.sm}px;`,
+        `  --radius-md: ${recipe.radius.md}px;`,
+        `  --radius-lg: ${recipe.radius.lg}px;`,
+        `  /* spacing: ${recipe.spacing} */`,
+        `  /* motion: ${recipe.motion} */`,
+        '}'
+      ];
+      snippet.textContent = snippetLines.join('\n');
+    }
+
+    recipeSelect.addEventListener('change', applyRecipe);
+    modeSelect.addEventListener('change', applyRecipe);
+    densitySelect.addEventListener('change', applyRecipe);
+
+    populateRecipeSelect();
+    recipeSelect.value = recipes.linear ? 'linear' : Object.keys(recipes)[0];
+    applyRecipe();
+  </script>
+</body>
+</html>
