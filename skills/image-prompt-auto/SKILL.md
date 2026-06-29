@@ -1,5 +1,5 @@
 ---
-name: image-prompt
+name: image-prompt-auto
 description: 图像生成**提示词创建指南**
 disable-model-invocation: true
 ---
