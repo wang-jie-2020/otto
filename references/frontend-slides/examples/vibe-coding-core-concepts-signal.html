@@ -1,0 +1,1982 @@
+<!doctype html>
+<html lang='zh-CN'>
+<head>
+  <meta charset='UTF-8' />
+  <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+  <title>Vibe Coding 核心概念 · Signal</title>
+
+  <link rel='preconnect' href='https://fonts.googleapis.com'>
+  <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+  <link href='https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap' rel='stylesheet'>
+
+  <style>
+    /* === THEME TOKENS === */
+    :root {
+      --font-display: 'Archivo', 'Noto Sans SC', sans-serif;
+      --font-body: 'Nunito', 'Noto Sans SC', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Noto Sans SC', monospace;
+
+      --surface-dark-bg: #10161f;
+      --surface-dark-bg-alt: #1a2430;
+      --surface-dark-text: #f5f4ef;
+      --surface-dark-muted: #c0c6d0;
+      --surface-dark-line: rgba(245, 244, 239, 0.16);
+      --surface-dark-panel: rgba(255, 255, 255, 0.03);
+
+      --surface-light-bg: #f6f5f2;
+      --surface-light-bg-alt: #eceae5;
+      --surface-light-text: #121417;
+      --surface-light-muted: #555c67;
+      --surface-light-line: rgba(18, 20, 23, 0.14);
+      --surface-light-panel: rgba(255, 255, 255, 0.92);
+
+      --accent: #ff3300;
+      --accent-soft: rgba(255, 51, 0, 0.15);
+
+      --control-bg: rgba(16, 22, 31, 0.75);
+      --control-text: #f5f4ef;
+      --control-line: rgba(245, 244, 239, 0.26);
+
+      --grid-size: 80px;
+      --grid-opacity: 0.06;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+    }
+
+    body.theme-signal {
+      --font-display: 'Source Serif 4', 'Noto Sans SC', serif;
+      --font-body: 'DM Sans', 'Noto Sans SC', sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Noto Sans SC', monospace;
+
+      --surface-dark-bg: #1C2644;
+      --surface-dark-bg-alt: #232F55;
+      --surface-dark-text: #E2DCD0;
+      --surface-dark-muted: #9ba6b8;
+      --surface-dark-line: #2E3D5C;
+      --surface-dark-panel: rgba(35, 47, 85, 0.55);
+
+      --surface-light-bg: #F0ECE3;
+      --surface-light-bg-alt: #E6E0D4;
+      --surface-light-text: #1A2030;
+      --surface-light-muted: #5A6270;
+      --surface-light-line: #CAC4B4;
+      --surface-light-panel: rgba(240, 236, 227, 0.78);
+
+      --accent: #C8A870;
+      --accent-soft: rgba(200, 168, 112, 0.18);
+
+      --control-bg: rgba(28, 38, 68, 0.8);
+      --control-text: #E2DCD0;
+      --control-line: rgba(226, 220, 208, 0.22);
+
+      --grid-opacity: 0.03;
+      --radius-sm: 0px;
+      --radius-md: 0px;
+    }
+
+    body.theme-terminal {
+      --font-display: 'JetBrains Mono', 'Noto Sans SC', monospace;
+      --font-body: 'IBM Plex Sans', 'Noto Sans SC', sans-serif;
+      --font-mono: 'JetBrains Mono', 'Noto Sans SC', monospace;
+
+      --surface-dark-bg: #091016;
+      --surface-dark-bg-alt: #10202a;
+      --surface-dark-text: #d8ffe9;
+      --surface-dark-muted: #8fcdb0;
+      --surface-dark-line: rgba(65, 209, 136, 0.30);
+      --surface-dark-panel: rgba(14, 28, 35, 0.72);
+
+      --surface-light-bg: #ecfff3;
+      --surface-light-bg-alt: #dff7e9;
+      --surface-light-text: #092014;
+      --surface-light-muted: #2e6a4d;
+      --surface-light-line: rgba(9, 32, 20, 0.20);
+      --surface-light-panel: rgba(255, 255, 255, 0.9);
+
+      --accent: #41d188;
+      --accent-soft: rgba(65, 209, 136, 0.22);
+
+      --control-bg: rgba(9, 16, 22, 0.82);
+      --control-text: #d8ffe9;
+      --control-line: rgba(65, 209, 136, 0.34);
+
+      --grid-opacity: 0.08;
+      --radius-sm: 6px;
+      --radius-md: 8px;
+    }
+
+    /* === VIEWPORT BASE (MANDATORY FULL COPY) === */
+    /* ===========================================
+       FIXED 16:9 STAGE: MANDATORY BASE STYLES
+       Include this ENTIRE file in every presentation.
+       Slides are authored at 1920×1080 and scaled as a whole.
+       =========================================== */
+
+    /* 1. Lock the browser viewport */
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: var(--stage-bg, #000);
+    }
+
+    /* 2. Full-window deck viewport */
+    .deck-viewport {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        background: var(--stage-bg, #000);
+    }
+
+    /* 3. Fixed 16:9 design canvas.
+       JavaScript sets transform: translate(...) scale(...). */
+    .deck-stage {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        transform-origin: 0 0;
+        background: var(--slide-bg, #fff);
+    }
+
+    /* 4. Slides stack inside the fixed stage.
+       Content must be laid out at 1920×1080, not reflowed per device. */
+    .slide {
+        position: absolute;
+        inset: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        display: block;
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        background: var(--slide-bg, #fff);
+    }
+
+    .slide.active,
+    .slide.visible {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 1;
+    }
+
+    /* 5. Keep media inside authored slide bounds */
+    img,
+    video,
+    canvas,
+    svg {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    /* 6. Presentation chrome stays outside the slide design system */
+    .deck-controls {
+        position: fixed;
+        left: 50%;
+        bottom: 22px;
+        transform: translateX(-50%);
+        z-index: 1000;
+    }
+
+    /* 7. Print one fixed-size slide per page */
+    @media print {
+        html,
+        body {
+            width: 1920px;
+            height: auto;
+            overflow: visible;
+            background: #fff;
+        }
+
+        .deck-viewport {
+            position: static;
+            overflow: visible;
+            background: #fff;
+        }
+
+        .deck-stage {
+            position: static;
+            width: auto;
+            height: auto;
+            transform: none !important;
+            background: none;
+        }
+
+        .slide {
+            position: relative;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            width: 1920px;
+            height: 1080px;
+            break-after: page;
+            page-break-after: always;
+        }
+
+        .slide:last-child {
+            break-after: auto;
+            page-break-after: auto;
+        }
+
+        .deck-controls {
+            display: none !important;
+        }
+    }
+
+    /* 8. Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.2s !important;
+        }
+    }
+
+    /* === GLOBAL TYPOGRAPHY === */
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: var(--font-body);
+      --stage-bg: #070b10;
+      color: #fff;
+    }
+
+    body.theme-swiss {
+      --stage-bg: radial-gradient(circle at 18% 12%, #1f2a37 0%, #10161f 48%, #0a0f15 100%);
+    }
+
+    body.theme-signal {
+      --stage-bg: radial-gradient(circle at 72% 16%, #2f3a5e 0%, #1C2644 46%, #151d34 100%);
+    }
+
+    body.theme-terminal {
+      --stage-bg: radial-gradient(circle at 20% 10%, #18303a 0%, #091016 52%, #04080c 100%);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    h1 { font-size: 96px; line-height: 1.03; }
+    h2 { font-size: 58px; line-height: 1.08; }
+    h3 { font-size: 34px; line-height: 1.2; }
+
+    p { margin: 0; }
+
+    .kicker {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .lead {
+      font-size: 30px;
+      line-height: 1.35;
+      color: var(--text-secondary);
+      max-width: 1500px;
+      font-weight: 600;
+    }
+
+    .body-text {
+      font-size: 24px;
+      line-height: 1.42;
+      color: var(--text-secondary);
+    }
+
+    .mini {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .accent {
+      color: var(--accent);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border: 1px solid var(--line-color);
+      border-radius: var(--radius-sm);
+      background: var(--panel-bg);
+      font-family: var(--font-mono);
+      font-size: 15px;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* === LAYOUT FRAME === */
+    .slide.surface-dark {
+      --slide-bg: var(--surface-dark-bg);
+      --text-primary: var(--surface-dark-text);
+      --text-secondary: var(--surface-dark-muted);
+      --line-color: var(--surface-dark-line);
+      --panel-bg: var(--surface-dark-panel);
+      --panel-bg-alt: var(--surface-dark-bg-alt);
+    }
+
+    .slide.surface-light {
+      --slide-bg: var(--surface-light-bg);
+      --text-primary: var(--surface-light-text);
+      --text-secondary: var(--surface-light-muted);
+      --line-color: var(--surface-light-line);
+      --panel-bg: var(--surface-light-panel);
+      --panel-bg-alt: var(--surface-light-bg-alt);
+    }
+
+    .slide.surface-dark::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,var(--grid-opacity)) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,var(--grid-opacity)) 1px, transparent 1px);
+      background-size: var(--grid-size) var(--grid-size), var(--grid-size) var(--grid-size);
+      opacity: 1;
+    }
+
+    .slide-shell {
+      position: absolute;
+      inset: 50px 58px;
+      border: 1px solid var(--line-color);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--slide-bg) 92%, #ffffff 8%), var(--slide-bg));
+      padding: 26px 34px 24px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 20px;
+      z-index: 1;
+    }
+
+    body.theme-swiss .slide-shell {
+      border-width: 2px;
+    }
+
+    body.theme-terminal .slide-shell {
+      box-shadow: 0 0 0 1px rgba(65, 209, 136, 0.18) inset;
+    }
+
+    .chrome,
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 28px;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .chrome {
+      border-bottom: 1px solid var(--line-color);
+      padding-bottom: 12px;
+    }
+
+    .foot {
+      border-top: 1px solid var(--line-color);
+      padding-top: 12px;
+    }
+
+    .slide-content {
+      display: grid;
+      align-content: start;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .headline-group {
+      display: grid;
+      gap: 10px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .grid-5 {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .panel {
+      border: 1px solid var(--line-color);
+      border-radius: var(--radius-md);
+      background: var(--panel-bg);
+      padding: 14px 16px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      min-height: 0;
+    }
+
+    .panel.alt {
+      background: color-mix(in srgb, var(--panel-bg-alt) 74%, var(--panel-bg) 26%);
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      line-height: 1.18;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .panel-sub {
+      font-size: 21px;
+      line-height: 1.34;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .list li {
+      position: relative;
+      padding-left: 24px;
+      font-size: 22px;
+      line-height: 1.38;
+      color: var(--text-secondary);
+    }
+
+    .list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-weight: 700;
+    }
+
+    body.theme-swiss .list li::before {
+      content: '■';
+      font-size: 10px;
+      top: 9px;
+    }
+
+    body.theme-terminal .list li::before {
+      content: '>';
+      top: 1px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .chip {
+      padding: 7px 12px;
+      border: 1px solid var(--line-color);
+      border-radius: 999px;
+      background: var(--panel-bg);
+      font-size: 18px;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .kpi {
+      border: 1px solid var(--line-color);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--panel-bg) 88%, transparent 12%);
+      padding: 16px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .kpi-value {
+      font-family: var(--font-display);
+      font-size: 42px;
+      line-height: 1;
+      color: var(--accent);
+      letter-spacing: -0.01em;
+    }
+
+    .kpi-label {
+      font-size: 20px;
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .kpi-note {
+      font-size: 19px;
+      line-height: 1.32;
+      color: var(--text-secondary);
+    }
+
+    .table-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      border: 1px solid var(--line-color);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--panel-bg);
+    }
+
+    .cell {
+      padding: 10px 12px;
+      border-right: 1px solid var(--line-color);
+      border-bottom: 1px solid var(--line-color);
+      font-size: 19px;
+      line-height: 1.3;
+      color: var(--text-secondary);
+      min-height: 58px;
+      display: grid;
+      align-content: center;
+    }
+
+    .cell:nth-child(3n) { border-right: 0; }
+    .cell.no-bottom { border-bottom: 0; }
+
+    .cell.head {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-primary);
+      background: color-mix(in srgb, var(--accent-soft) 45%, transparent 55%);
+      font-weight: 700;
+    }
+
+    .flow-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .flow-step {
+      border: 1px solid var(--line-color);
+      border-radius: var(--radius-md);
+      background: var(--panel-bg);
+      padding: 10px 12px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .flow-step .num {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+    }
+
+    .flow-step .name {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .flow-step .desc {
+      font-size: 18px;
+      line-height: 1.32;
+      color: var(--text-secondary);
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      border-left: 3px solid var(--accent);
+      padding: 10px 12px 10px 14px;
+      background: var(--panel-bg);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      display: grid;
+      gap: 4px;
+    }
+
+    .timeline-item .time {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .timeline-item .event {
+      font-size: 21px;
+      color: var(--text-primary);
+      font-weight: 700;
+      line-height: 1.28;
+    }
+
+    .timeline-item .detail {
+      font-size: 19px;
+      color: var(--text-secondary);
+      line-height: 1.33;
+    }
+
+    .code-block {
+      font-family: var(--font-mono);
+      font-size: 17px;
+      line-height: 1.42;
+      padding: 12px 14px;
+      border: 1px solid var(--line-color);
+      border-radius: var(--radius-md);
+      background: color-mix(in srgb, var(--panel-bg-alt) 75%, transparent 25%);
+      color: var(--text-primary);
+      white-space: pre-wrap;
+    }
+
+    .quote-card {
+      border: 1px solid var(--line-color);
+      border-radius: var(--radius-md);
+      padding: 20px 22px;
+      background: var(--panel-bg);
+      display: grid;
+      gap: 10px;
+    }
+
+    .quote-main {
+      font-family: var(--font-display);
+      font-size: 44px;
+      line-height: 1.2;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .quote-sub {
+      font-size: 24px;
+      line-height: 1.38;
+      color: var(--text-secondary);
+    }
+
+    /* === DECK CONTROLS === */
+    .deck-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--control-bg);
+      border: 1px solid var(--control-line);
+      border-radius: 999px;
+      padding: 8px 14px;
+      backdrop-filter: blur(8px);
+      user-select: none;
+    }
+
+    .deck-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--control-line);
+      background: transparent;
+      color: var(--control-text);
+      font-family: var(--font-mono);
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .deck-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .deck-counter {
+      min-width: 90px;
+      text-align: center;
+      font-family: var(--font-mono);
+      color: var(--control-text);
+      letter-spacing: 0.06em;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .deck-progress {
+      width: 120px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.2);
+      overflow: hidden;
+    }
+
+    .deck-progress > span {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 260ms ease;
+    }
+
+    /* === EDIT MODE UI === */
+    .edit-hotzone {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 84px;
+      height: 84px;
+      z-index: 10000;
+      cursor: pointer;
+    }
+
+    .edit-toggle {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--control-line);
+      background: var(--control-bg);
+      color: var(--control-text);
+      backdrop-filter: blur(6px);
+      z-index: 10001;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      font-size: 18px;
+    }
+
+    .edit-toggle.show,
+    .edit-toggle.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .edit-toggle.active {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    body.edit-mode [contenteditable='true'] {
+      outline: 1px dashed var(--accent);
+      outline-offset: 3px;
+      border-radius: 4px;
+      cursor: text;
+    }
+
+    .edit-toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 10002;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--control-line);
+      background: var(--control-bg);
+      color: var(--control-text);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .edit-toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* === REVEAL ANIMATIONS === */
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.58s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.58s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .slide.visible .reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-22px);
+      transition: opacity 0.58s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.58s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .slide.visible .reveal-left {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 0.58s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.58s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .slide.visible .reveal-scale {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal,
+      .reveal-left,
+      .reveal-scale {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body class='theme-signal'>
+  <div class='deck-viewport'>
+    <main class='deck-stage' id='deckStage'>
+
+      <!-- Slide 1 -->
+      <section class='slide surface-dark active visible'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'>
+            <span>Teaching Tutorial</span>
+            <span>01 / 22</span>
+          </header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Vibe Coding 核心概念</p>
+              <h1 class='reveal'>把自然语言开发做成<br><span class='accent'>可交付系统</span></h1>
+              <p class='lead reveal'>Subagent、Hooks、MCP、Skill、CLAUDE.md：先理解概念，再掌握协同链路。</p>
+            </div>
+            <div class='chips reveal'>
+              <span class='chip'>Subagent 并行分工</span>
+              <span class='chip'>Hooks 自动闸门</span>
+              <span class='chip'>MCP 外部能力接入</span>
+              <span class='chip'>Skill 流程复用</span>
+              <span class='chip'>CLAUDE.md 协作契约</span>
+            </div>
+          </div>
+          <footer class='foot reveal'>
+            <span>For developers with coding experience</span>
+            <span>Vibe Coding System Series</span>
+          </footer>
+        </div>
+      </section>
+
+      <!-- Slide 2 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>课程目标</span><span>02 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Learning Outcomes</p>
+              <h2 class='reveal'>这套课结束后你应该拿到什么？</h2>
+            </div>
+            <div class='kpi-grid reveal-scale'>
+              <article class='kpi'>
+                <div class='kpi-value'>5</div>
+                <div class='kpi-label'>核心概念讲清</div>
+                <div class='kpi-note'>知道每个概念的定义、边界和常见误用。</div>
+              </article>
+              <article class='kpi'>
+                <div class='kpi-value'>1</div>
+                <div class='kpi-label'>协同工作流</div>
+                <div class='kpi-note'>理解“规则 → 流程 → 分工 → 数据 → 质检”的闭环。</div>
+              </article>
+              <article class='kpi'>
+                <div class='kpi-value'>22</div>
+                <div class='kpi-label'>可复用讲义页</div>
+                <div class='kpi-note'>可直接作为团队培训或内部共识文档。</div>
+              </article>
+            </div>
+            <div class='grid-2 reveal'>
+              <article class='panel'>
+                <div class='panel-title'>课程结构</div>
+                <ul class='list'>
+                  <li>Part A：为什么“想到哪写到哪”会失控</li>
+                  <li>Part B：五个概念逐个拆解</li>
+                  <li>Part C：完整系统如何配合交付</li>
+                </ul>
+              </article>
+              <article class='panel alt'>
+                <div class='panel-title'>阅读模式提示</div>
+                <ul class='list'>
+                  <li>这是 high-density deck：信息自包含</li>
+                  <li>每页都有结论，不依赖讲者临场补充</li>
+                  <li>可直接转成内部培训资料</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>High density / reading-first</span><span>Part A</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 3 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>问题定义</span><span>03 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Why naive vibe coding fails</p>
+              <h2 class='reveal'>“想到哪写到哪”通常在三件事上翻车</h2>
+            </div>
+            <div class='grid-2'>
+              <article class='panel reveal-left'>
+                <div class='panel-title'>三类直接症状</div>
+                <ul class='list'>
+                  <li>结果不稳定：同样需求，多次执行结果飘忽</li>
+                  <li>上下文断裂：第二天接手时找不到决策依据</li>
+                  <li>无法规模化：个人能跑，团队无法复制</li>
+                </ul>
+              </article>
+              <article class='panel alt reveal'>
+                <div class='panel-title'>症状 → 根因 → 代价</div>
+                <div class='table-grid'>
+                  <div class='cell head'>症状</div><div class='cell head'>根因</div><div class='cell head'>代价</div>
+                  <div class='cell'>结果不稳定</div><div class='cell'>没有固定流程</div><div class='cell'>返工与回滚</div>
+                  <div class='cell'>上下文不一致</div><div class='cell'>规则未固化</div><div class='cell'>沟通成本上升</div>
+                  <div class='cell no-bottom'>交付不可复用</div><div class='cell no-bottom'>缺少模板化能力</div><div class='cell no-bottom'>团队学习曲线陡峭</div>
+                </div>
+              </article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>核心结论：vibe coding 需要系统约束</span><span>Problem framing</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 4 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>概念地图</span><span>04 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Five concepts at a glance</p>
+              <h2 class='reveal'>五个概念并不是平铺，而是流水线角色分工</h2>
+            </div>
+            <div class='grid-5 reveal-scale'>
+              <article class='panel'><div class='panel-title'>Subagent</div><p class='panel-sub'>并行执行与角色拆分</p></article>
+              <article class='panel'><div class='panel-title'>Hooks</div><p class='panel-sub'>自动触发的质量闸门</p></article>
+              <article class='panel'><div class='panel-title'>MCP</div><p class='panel-sub'>模型接入外部工具/数据</p></article>
+              <article class='panel'><div class='panel-title'>Skill</div><p class='panel-sub'>高频任务流程化封装</p></article>
+              <article class='panel'><div class='panel-title'>CLAUDE.md</div><p class='panel-sub'>长期一致性的项目契约</p></article>
+            </div>
+            <div class='flow-row reveal'>
+              <article class='flow-step'><div class='num'>STEP 01</div><div class='name'>定规则</div><div class='desc'>CLAUDE.md 给边界</div></article>
+              <article class='flow-step'><div class='num'>STEP 02</div><div class='name'>拉流程</div><div class='desc'>Skill 启动标准任务</div></article>
+              <article class='flow-step'><div class='num'>STEP 03</div><div class='name'>拆分工</div><div class='desc'>Subagent 并行推进</div></article>
+              <article class='flow-step'><div class='num'>STEP 04</div><div class='name'>接能力</div><div class='desc'>MCP 获取真实事实</div></article>
+              <article class='flow-step'><div class='num'>STEP 05</div><div class='name'>做质检</div><div class='desc'>Hooks 自动把关</div></article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>这是一个系统，不是五个孤立术语</span><span>Map</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 5 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>Concept 1</span><span>05 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Subagent / 并行小队</p>
+              <h2 class='reveal'>定义：主 Agent 派出的专职子任务执行者</h2>
+              <p class='lead reveal'>目标不是“多开几个窗口”，而是清晰职责 + 并行执行 + 可汇总。</p>
+            </div>
+            <div class='grid-2'>
+              <article class='panel reveal-left'>
+                <div class='panel-title'>Subagent 的价值</div>
+                <ul class='list'>
+                  <li>把大问题拆成可并行子问题，缩短总时长</li>
+                  <li>每个子任务保持单一维度，降低混乱上下文</li>
+                  <li>主 Agent 只负责策略与汇总，质量更稳定</li>
+                </ul>
+              </article>
+              <article class='panel alt reveal'>
+                <div class='panel-title'>典型拆分维度</div>
+                <ul class='list'>
+                  <li>按目标：调研 / 设计 / 实现 / 验证</li>
+                  <li>按质量维度：correctness / performance / security</li>
+                  <li>按数据源：代码 / 文档 / 工单 / 监控</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>关键词：Parallel + Specialized + Summarized</span><span>Subagent</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 6 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>Subagent 实例</span><span>06 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Example</p>
+              <h2 class='reveal'>PR 评审：三个子队并行，主 Agent 汇总决策</h2>
+            </div>
+            <div class='grid-3 reveal-scale'>
+              <article class='panel'>
+                <div class='panel-title'>A 队：Correctness</div>
+                <ul class='list'>
+                  <li>检查边界条件与空值分支</li>
+                  <li>确认业务规则是否被破坏</li>
+                </ul>
+              </article>
+              <article class='panel'>
+                <div class='panel-title'>B 队：Performance</div>
+                <ul class='list'>
+                  <li>识别 N+1 查询和重复计算</li>
+                  <li>评估热点路径开销</li>
+                </ul>
+              </article>
+              <article class='panel'>
+                <div class='panel-title'>C 队：Security</div>
+                <ul class='list'>
+                  <li>检查权限边界和敏感信息泄露</li>
+                  <li>确认输入校验与输出过滤</li>
+                </ul>
+              </article>
+            </div>
+            <article class='quote-card reveal'>
+              <div class='quote-main'>主 Agent 输出 = 统一风险清单 + 优先级 + 修复顺序</div>
+              <div class='quote-sub'>这一步是“决策整合”，不是重复分析。</div>
+            </article>
+          </div>
+          <footer class='foot reveal'><span>并行不是目的，可决策结果才是</span><span>PR review pattern</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 7 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>Subagent 边界</span><span>07 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>When to split / when not</p>
+              <h2 class='reveal'>拆分并不是越多越好：看独立性和耦合度</h2>
+            </div>
+            <div class='grid-2'>
+              <article class='panel reveal'>
+                <div class='panel-title'>适合拆分</div>
+                <ul class='list'>
+                  <li>子任务之间弱依赖，可独立完成</li>
+                  <li>需要多维度独立审视（如安全+性能）</li>
+                  <li>总任务复杂，单上下文容易失真</li>
+                </ul>
+              </article>
+              <article class='panel alt reveal-left'>
+                <div class='panel-title'>不适合拆分</div>
+                <ul class='list'>
+                  <li>任务极小：几行修复即可完成</li>
+                  <li>步骤强依赖：后一阶段必须等待前一阶段</li>
+                  <li>成本大于收益：协调和汇总成本更高</li>
+                </ul>
+              </article>
+            </div>
+            <div class='chips reveal'>
+              <span class='chip'>检查点 1：职责是否单一？</span>
+              <span class='chip'>检查点 2：结果是否可独立验证？</span>
+              <span class='chip'>检查点 3：主 Agent 是否能无损汇总？</span>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>拆分原则：独立可验证 + 汇总可决策</span><span>Subagent checklist</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 8 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>Concept 2</span><span>08 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Hooks / 自动闸门</p>
+              <h2 class='reveal'>定义：在关键时机自动执行的约束与检查</h2>
+              <p class='lead reveal'>Hooks 解决“知道该做但总会忘”的问题，把经验变成强制流程。</p>
+            </div>
+            <div class='grid-2'>
+              <article class='panel reveal-left'>
+                <div class='panel-title'>常见触发时机</div>
+                <ul class='list'>
+                  <li>任务开始前：检查上下文和权限约束</li>
+                  <li>执行中：对高风险操作进行二次确认</li>
+                  <li>任务结束后：自动跑质量检查并记录摘要</li>
+                </ul>
+              </article>
+              <article class='panel alt reveal'>
+                <div class='panel-title'>典型收益</div>
+                <ul class='list'>
+                  <li>减少漏测、漏扫、漏审这类低级失误</li>
+                  <li>统一团队行为，降低“个人习惯差异”</li>
+                  <li>把质量前移，在发布前就拦住问题</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>Hooks = 自动化守门员</span><span>Process control</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 9 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>Hooks 实战</span><span>09 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Hook pipeline</p>
+              <h2 class='reveal'>把 Hook 放进“前中后”三段，质量成本最低</h2>
+            </div>
+            <div class='timeline reveal-scale'>
+              <article class='timeline-item'>
+                <div class='time'>Before execution</div>
+                <div class='event'>预执行检查</div>
+                <div class='detail'>校验工作目录、确认是否触发危险命令、读取必要上下文文件。</div>
+              </article>
+              <article class='timeline-item'>
+                <div class='time'>During execution</div>
+                <div class='event'>过程拦截</div>
+                <div class='detail'>命中敏感模式（密钥、破坏性命令）时阻断并要求确认。</div>
+              </article>
+              <article class='timeline-item'>
+                <div class='time'>After execution</div>
+                <div class='event'>自动收尾</div>
+                <div class='detail'>运行测试、产出摘要、提醒未完成校验项。</div>
+              </article>
+            </div>
+            <div class='code-block reveal'>Hook 设计原则：
+1) 只做可自动化、可确定的检查
+2) 失败时给出可执行修复建议
+3) 不把 Hook 变成“噪音提示器”</div>
+          </div>
+          <footer class='foot reveal'><span>好 Hook：少而硬；坏 Hook：多而吵</span><span>Hook patterns</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 10 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>Concept 3</span><span>10 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>MCP / Model Context Protocol</p>
+              <h2 class='reveal'>定义：让模型访问外部工具与实时数据的标准接口</h2>
+            </div>
+            <div class='grid-3 reveal-scale'>
+              <article class='panel'>
+                <div class='panel-title'>模型层</div>
+                <p class='panel-sub'>负责推理、规划和自然语言交互。</p>
+              </article>
+              <article class='panel'>
+                <div class='panel-title'>协议层</div>
+                <p class='panel-sub'>把“调用能力”规范成稳定接口。</p>
+              </article>
+              <article class='panel'>
+                <div class='panel-title'>工具层</div>
+                <p class='panel-sub'>代码图谱、文档库、工单、内部 API。</p>
+              </article>
+            </div>
+            <article class='panel reveal'>
+              <div class='panel-title'>为什么 MCP 是系统核心</div>
+              <ul class='list'>
+                <li>没有 MCP：回答可能“听起来对”，但难验证</li>
+                <li>有了 MCP：结论可追溯到真实数据来源</li>
+                <li>统一协议后：新工具接入成本可控，流程可扩展</li>
+              </ul>
+            </article>
+          </div>
+          <footer class='foot reveal'><span>MCP 让 Agent 从“会说”升级为“会查会做”</span><span>MCP</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 11 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>MCP 实例</span><span>11 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Code intelligence example</p>
+              <h2 class='reveal'>同一个问题：有无 MCP，信息质量差一个数量级</h2>
+            </div>
+            <div class='grid-2'>
+              <article class='panel reveal-left'>
+                <div class='panel-title'>没有 MCP</div>
+                <ul class='list'>
+                  <li>靠记忆或盲搜拼接答案</li>
+                  <li>调用链容易漏节点或误判</li>
+                  <li>结论难复现、难审计</li>
+                </ul>
+              </article>
+              <article class='panel alt reveal'>
+                <div class='panel-title'>使用 MCP + CodeGraph</div>
+                <ul class='list'>
+                  <li>先抓结构上下文，再拉关键源代码</li>
+                  <li>可直接追踪 from → to 的调用路径</li>
+                  <li>结果有出处，团队可复核</li>
+                </ul>
+              </article>
+            </div>
+            <div class='code-block reveal'>示例提问：
+“这个函数最终如何到达渲染层？”
+→ 通过 trace/context/explore 组合，得到可验证路径而非猜测。</div>
+          </div>
+          <footer class='foot reveal'><span>可验证性是工程化的分水岭</span><span>MCP in action</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 12 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>Concept 4</span><span>12 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Skill / 流程封装</p>
+              <h2 class='reveal'>定义：把高频任务沉淀成可触发的标准化命令</h2>
+            </div>
+            <div class='grid-2'>
+              <article class='panel reveal-left'>
+                <div class='panel-title'>Skill 的本质</div>
+                <ul class='list'>
+                  <li>不是快捷键，而是“带约束的执行模板”</li>
+                  <li>固化输入、输出、步骤和质量闸门</li>
+                  <li>让团队经验从“口口相传”变成“可复用资产”</li>
+                </ul>
+              </article>
+              <article class='panel alt reveal'>
+                <div class='panel-title'>典型触发方式</div>
+                <div class='code-block'>/article-writing  文章成稿流程
+/code-review      按维度审查改动
+/verify           验证改动是否真正生效</div>
+              </article>
+            </div>
+            <div class='chips reveal'>
+              <span class='chip'>输入规范化</span>
+              <span class='chip'>输出可预期</span>
+              <span class='chip'>可持续迭代优化</span>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>Skill = 团队最佳实践的产品化</span><span>Skill</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 13 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>Skill 设计</span><span>13 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>How to design a good skill</p>
+              <h2 class='reveal'>一个可持续 Skill 至少包含四个部件</h2>
+            </div>
+            <div class='grid-4 reveal-scale'>
+              <article class='panel'><div class='panel-title'>触发语义</div><p class='panel-sub'>什么时候必须触发，避免歧义。</p></article>
+              <article class='panel'><div class='panel-title'>输入契约</div><p class='panel-sub'>参数最小完备，缺失时提问补齐。</p></article>
+              <article class='panel'><div class='panel-title'>输出模板</div><p class='panel-sub'>结构固定，可直接交付或二次加工。</p></article>
+              <article class='panel'><div class='panel-title'>质量闸门</div><p class='panel-sub'>事实检查、格式校验、异常回退。</p></article>
+            </div>
+            <article class='panel reveal'>
+              <div class='panel-title'>判断 Skill 是否成熟的信号</div>
+              <ul class='list'>
+                <li>新成员不依赖作者本人也能跑通</li>
+                <li>多次执行结果结构稳定，差异可解释</li>
+                <li>迭代成本低：改一处可全链路复用</li>
+              </ul>
+            </article>
+          </div>
+          <footer class='foot reveal'><span>成熟 Skill 的目标是“替代重复沟通”</span><span>Skill quality</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 14 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>Concept 5</span><span>14 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>CLAUDE.md / 项目协作契约</p>
+              <h2 class='reveal'>定义：项目级长期指令，约束行为并统一输出风格</h2>
+              <p class='lead reveal'>它不是“灵感提示词”，而是团队工作方式的书面协议。</p>
+            </div>
+            <div class='grid-2'>
+              <article class='panel reveal-left'>
+                <div class='panel-title'>CLAUDE.md 应该写什么</div>
+                <ul class='list'>
+                  <li>沟通风格：先方案后解释、何时澄清</li>
+                  <li>风险边界：禁止密钥、危险命令确认机制</li>
+                  <li>检索策略：默认范围、何时使用 Git</li>
+                  <li>项目偏好：命名、注释、交付格式</li>
+                </ul>
+              </article>
+              <article class='panel alt reveal'>
+                <div class='panel-title'>它解决的核心问题</div>
+                <ul class='list'>
+                  <li>不同会话中的行为一致性</li>
+                  <li>跨成员协作时的默认规范对齐</li>
+                  <li>减少“每次都重新交代规则”</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>规则写进文件，才能长期稳定执行</span><span>CLAUDE.md</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 15 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>CLAUDE.md 示例</span><span>15 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Minimal but effective</p>
+              <h2 class='reveal'>一份能落地的 CLAUDE.md，通常像这样</h2>
+            </div>
+            <div class='grid-2'>
+              <div class='code-block reveal-left'>## 沟通与执行
+- 先给方案，再解释原因
+- 需求不清时先提澄清问题
+- 不输出半成品
+
+## 风险边界
+- 禁止提交密钥
+- 未确认不执行破坏性命令
+
+## 检索策略
+- 默认做定向检索
+- 未给路径先问范围</div>
+              <article class='panel alt reveal'>
+                <div class='panel-title'>常见误区</div>
+                <ul class='list'>
+                  <li>写成“愿景口号”，缺少可执行约束</li>
+                  <li>规则过多但无优先级，冲突时无法判定</li>
+                  <li>不维护：项目变化后文档长期过期</li>
+                </ul>
+                <div class='panel-title'>改进建议</div>
+                <ul class='list'>
+                  <li>每条规则都可被验证、可被触发</li>
+                  <li>把高频反馈回写到文档中</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>好文档让行为一致；坏文档制造幻觉一致</span><span>Contract quality</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 16 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>系统协同 I</span><span>16 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Workflow step 1-2</p>
+              <h2 class='reveal'>先把地基打好：CLAUDE.md + Skill</h2>
+            </div>
+            <div class='grid-2'>
+              <article class='panel reveal-left'>
+                <div class='panel-title'>Step 1：CLAUDE.md 定边界</div>
+                <ul class='list'>
+                  <li>定义风险动作确认机制</li>
+                  <li>约定输出形式与语言风格</li>
+                  <li>固化检索范围与默认策略</li>
+                </ul>
+                <div class='badge'>输出物：项目协作契约</div>
+              </article>
+              <article class='panel alt reveal'>
+                <div class='panel-title'>Step 2：Skill 拉起流程</div>
+                <ul class='list'>
+                  <li>把高频任务封装为可触发命令</li>
+                  <li>固定输入补齐问题与输出模板</li>
+                  <li>减少“每次重新设计流程”的成本</li>
+                </ul>
+                <div class='badge'>输出物：标准任务流水线</div>
+              </article>
+            </div>
+            <article class='quote-card reveal'>
+              <div class='quote-main'>没有边界和模板，后续并行只会放大混乱。</div>
+            </article>
+          </div>
+          <footer class='foot reveal'><span>先稳定规则，再扩大执行规模</span><span>System foundation</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 17 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>系统协同 II</span><span>17 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Workflow step 3-5</p>
+              <h2 class='reveal'>并行执行 + 真实数据 + 自动质检 = 可交付闭环</h2>
+            </div>
+            <div class='grid-3 reveal-scale'>
+              <article class='panel'>
+                <div class='panel-title'>Step 3：Subagent</div>
+                <ul class='list'>
+                  <li>按维度拆分子任务</li>
+                  <li>并行推进，缩短总时长</li>
+                </ul>
+              </article>
+              <article class='panel'>
+                <div class='panel-title'>Step 4：MCP</div>
+                <ul class='list'>
+                  <li>统一接入代码/文档/工单系统</li>
+                  <li>让关键结论可追溯、可验证</li>
+                </ul>
+              </article>
+              <article class='panel'>
+                <div class='panel-title'>Step 5：Hooks</div>
+                <ul class='list'>
+                  <li>在关键节点自动做质量检查</li>
+                  <li>拦截低级错误进入交付环节</li>
+                </ul>
+              </article>
+            </div>
+            <div class='flow-row reveal'>
+              <article class='flow-step'><div class='num'>INPUT</div><div class='name'>需求</div><div class='desc'>目标、范围、交付标准</div></article>
+              <article class='flow-step'><div class='num'>PARALLEL</div><div class='name'>拆解</div><div class='desc'>Subagent 并行执行</div></article>
+              <article class='flow-step'><div class='num'>EVIDENCE</div><div class='name'>取证</div><div class='desc'>MCP 获取真实数据</div></article>
+              <article class='flow-step'><div class='num'>GATE</div><div class='name'>质检</div><div class='desc'>Hooks 自动守门</div></article>
+              <article class='flow-step'><div class='num'>OUTPUT</div><div class='name'>交付</div><div class='desc'>主 Agent 汇总结论</div></article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>主 Agent 的价值：决策整合，而不是重复劳动</span><span>System loop</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 18 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>端到端案例</span><span>18 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>48-hour delivery</p>
+              <h2 class='reveal'>案例：两天完成“支付系统重构复盘”文章交付</h2>
+            </div>
+            <div class='timeline reveal-scale'>
+              <article class='timeline-item'>
+                <div class='time'>T+0h</div>
+                <div class='event'>规则初始化</div>
+                <div class='detail'>在 CLAUDE.md 中写清敏感信息边界、文风、交付格式。</div>
+              </article>
+              <article class='timeline-item'>
+                <div class='time'>T+2h</div>
+                <div class='event'>Skill 启动写作流程</div>
+                <div class='detail'>固定“提纲 → 证据收集 → 成稿 → 自检”骨架。</div>
+              </article>
+              <article class='timeline-item'>
+                <div class='time'>T+6h</div>
+                <div class='event'>Subagent 并行收集</div>
+                <div class='detail'>代码事实、故障时间线、结构方案三路并行。</div>
+              </article>
+              <article class='timeline-item'>
+                <div class='time'>T+20h</div>
+                <div class='event'>MCP 验证关键事实</div>
+                <div class='detail'>调用链、工单状态、监控指标全部可追溯。</div>
+              </article>
+              <article class='timeline-item'>
+                <div class='time'>T+30h</div>
+                <div class='event'>Hooks 自动质检</div>
+                <div class='detail'>敏感信息扫描、链接检查、格式校验一次完成。</div>
+              </article>
+              <article class='timeline-item'>
+                <div class='time'>T+48h</div>
+                <div class='event'>交付成稿</div>
+                <div class='detail'>主 Agent 汇总冲突并输出可发布版本。</div>
+              </article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>系统化带来的不是“更快写字”，而是“更稳交付”</span><span>Case study</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 19 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>质量矩阵</span><span>19 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Quality ownership map</p>
+              <h2 class='reveal'>五个模块在质量保障里分别负责什么？</h2>
+            </div>
+            <div class='table-grid reveal-scale' style='grid-template-columns: 1.4fr repeat(5, 1fr);'>
+              <div class='cell head'>质量项</div><div class='cell head'>Subagent</div><div class='cell head'>Hooks</div><div class='cell head'>MCP</div><div class='cell head'>Skill</div><div class='cell head'>CLAUDE.md</div>
+              <div class='cell'>事实准确</div><div class='cell'>多视角交叉检查</div><div class='cell'>结果提交前触发验证</div><div class='cell'>提供实时数据源</div><div class='cell'>固定取证步骤</div><div class='cell'>定义可信来源要求</div>
+              <div class='cell'>安全合规</div><div class='cell'>单独安全维度审查</div><div class='cell'>命中风险自动拦截</div><div class='cell'>接入权限系统状态</div><div class='cell'>预置安全检查动作</div><div class='cell'>写明禁止行为</div>
+              <div class='cell'>交付一致性</div><div class='cell'>汇总模板统一</div><div class='cell'>输出前格式闸门</div><div class='cell'>数据结构标准化</div><div class='cell'>固定输出骨架</div><div class='cell'>统一风格约束</div>
+              <div class='cell no-bottom'>可复用性</div><div class='cell no-bottom'>任务可复制拆分</div><div class='cell no-bottom'>流程自动化可迁移</div><div class='cell no-bottom'>协议可扩展</div><div class='cell no-bottom'>命令可复用</div><div class='cell no-bottom'>规则可继承</div>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>没有单点英雄，只有职责清晰的系统分工</span><span>Quality matrix</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 20 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>落地路线</span><span>20 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Adoption roadmap</p>
+              <h2 class='reveal'>从个人可用到团队可复制，建议分三层推进</h2>
+            </div>
+            <div class='grid-3 reveal-scale'>
+              <article class='panel'>
+                <div class='panel-title'>L1：个人试用（1 周）</div>
+                <ul class='list'>
+                  <li>先写最小 CLAUDE.md</li>
+                  <li>挑 1 个 Skill 反复打磨</li>
+                  <li>建立最基本 Hook 守门</li>
+                </ul>
+              </article>
+              <article class='panel alt'>
+                <div class='panel-title'>L2：团队标准化（2-4 周）</div>
+                <ul class='list'>
+                  <li>沉淀共用 Skill 库</li>
+                  <li>按任务类型定义 Subagent 模板</li>
+                  <li>统一 MCP 接入规范</li>
+                </ul>
+              </article>
+              <article class='panel'>
+                <div class='panel-title'>L3：平台化（持续）</div>
+                <ul class='list'>
+                  <li>把高价值 Hook 产品化</li>
+                  <li>追踪质量指标与返工率</li>
+                  <li>形成可审计交付流水线</li>
+                </ul>
+              </article>
+            </div>
+            <div class='chips reveal'>
+              <span class='chip'>先有规则，再谈效率</span>
+              <span class='chip'>先做最小闭环，再扩规模</span>
+              <span class='chip'>让每次反馈都可回写系统</span>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>路线图目标：降低随机性，提升可复制性</span><span>Adoption</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 21 -->
+      <section class='slide surface-dark'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>一句话工作流</span><span>21 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>One-line pipeline</p>
+              <h2 class='reveal'>CLAUDE.md → Skill → Subagent → MCP → Hooks → 交付</h2>
+              <p class='lead reveal'>前端是自然语言，后端是工程系统。这才是可复制的 vibe coding。</p>
+            </div>
+            <div class='flow-row reveal-scale'>
+              <article class='flow-step'><div class='num'>Rule</div><div class='name'>CLAUDE.md</div><div class='desc'>统一边界</div></article>
+              <article class='flow-step'><div class='num'>Flow</div><div class='name'>Skill</div><div class='desc'>统一入口</div></article>
+              <article class='flow-step'><div class='num'>Parallel</div><div class='name'>Subagent</div><div class='desc'>统一分工</div></article>
+              <article class='flow-step'><div class='num'>Evidence</div><div class='name'>MCP</div><div class='desc'>统一事实</div></article>
+              <article class='flow-step'><div class='num'>Gate</div><div class='name'>Hooks</div><div class='desc'>统一质检</div></article>
+            </div>
+            <div class='grid-2 reveal'>
+              <article class='panel'>
+                <div class='panel-title'>误区</div>
+                <ul class='list'>
+                  <li>vibe coding = 随意写代码</li>
+                  <li>多用模型 = 自动高质量</li>
+                </ul>
+              </article>
+              <article class='panel alt'>
+                <div class='panel-title'>事实</div>
+                <ul class='list'>
+                  <li>vibe coding = 语言驱动 + 系统约束</li>
+                  <li>质量来自“分工 + 数据 + 闸门”组合</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>系统思维 > 单点技巧</span><span>Recap</span></footer>
+        </div>
+      </section>
+
+      <!-- Slide 22 -->
+      <section class='slide surface-light'>
+        <div class='slide-shell'>
+          <header class='chrome reveal'><span>总结</span><span>22 / 22</span></header>
+          <div class='slide-content'>
+            <div class='headline-group'>
+              <p class='kicker reveal'>Takeaway</p>
+              <h2 class='reveal'>记住这五句，基本不会走偏</h2>
+            </div>
+            <article class='quote-card reveal-scale'>
+              <div class='quote-main'>Subagent 做分工，Hooks 守质量，MCP 给事实，Skill 管复用，CLAUDE.md 保一致。</div>
+              <div class='quote-sub'>当这五件事同时在线，AI 才从“灵感助手”升级为“稳定产线”。</div>
+            </article>
+            <div class='grid-2 reveal'>
+              <article class='panel'>
+                <div class='panel-title'>你可以马上做的三步</div>
+                <ul class='list'>
+                  <li>今天：写最小版 CLAUDE.md</li>
+                  <li>本周：固化 1 个高频 Skill</li>
+                  <li>下周：给关键流程加 2 个 Hooks</li>
+                </ul>
+              </article>
+              <article class='panel alt'>
+                <div class='panel-title'>扩展阅读方向</div>
+                <ul class='list'>
+                  <li>多 Agent 编排策略（并行 vs 流水线）</li>
+                  <li>MCP 能力目录与权限治理</li>
+                  <li>质量指标体系：缺陷率、返工率、交付时延</li>
+                </ul>
+              </article>
+            </div>
+          </div>
+          <footer class='foot reveal'><span>Thanks</span><span>End</span></footer>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class='deck-controls' aria-label='Slide controls'>
+    <button class='deck-btn' id='prevBtn' aria-label='Previous slide'>←</button>
+    <div class='deck-counter' id='counter'>01 / 22</div>
+    <div class='deck-progress'><span id='progressBar'></span></div>
+    <button class='deck-btn' id='nextBtn' aria-label='Next slide'>→</button>
+  </div>
+
+  <div class='edit-hotzone' aria-hidden='true'></div>
+  <button class='edit-toggle' id='editToggle' title='Edit mode (E)' aria-label='Toggle edit mode'>✏️</button>
+  <div class='edit-toast' id='editToast'>Saved</div>
+
+  <script>
+    /* === SLIDE PRESENTATION CONTROLLER === */
+    class SlidePresentation {
+      constructor() {
+        this.stage = document.getElementById('deckStage');
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.currentSlide = 0;
+        this.totalSlides = this.slides.length;
+        this.wheelLocked = false;
+
+        this.counterEl = document.getElementById('counter');
+        this.progressEl = document.getElementById('progressBar');
+
+        this.setupStageScale();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        this.setupButtons();
+        this.showSlide(0, false);
+      }
+
+      setupStageScale() {
+        const scale = () => {
+          const factor = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+          const x = (window.innerWidth - 1920 * factor) / 2;
+          const y = (window.innerHeight - 1080 * factor) / 2;
+          this.stage.style.transform = `translate(${x}px, ${y}px) scale(${factor})`;
+        };
+
+        scale();
+        window.addEventListener('resize', scale);
+      }
+
+      setupKeyboardNav() {
+        document.addEventListener('keydown', (event) => {
+          const key = event.key;
+          const target = event.target;
+          const inEditable = target && target.getAttribute && target.getAttribute('contenteditable') === 'true';
+          if (inEditable) return;
+
+          if (key === 'ArrowRight' || key === 'PageDown' || key === ' ') {
+            event.preventDefault();
+            this.next();
+          } else if (key === 'ArrowLeft' || key === 'PageUp') {
+            event.preventDefault();
+            this.prev();
+          } else if (key === 'Home') {
+            event.preventDefault();
+            this.showSlide(0);
+          } else if (key === 'End') {
+            event.preventDefault();
+            this.showSlide(this.totalSlides - 1);
+          }
+        });
+      }
+
+      setupTouchNav() {
+        const viewport = document.querySelector('.deck-viewport');
+        let startX = 0;
+        let startY = 0;
+
+        viewport.addEventListener('touchstart', (event) => {
+          const touch = event.changedTouches[0];
+          startX = touch.clientX;
+          startY = touch.clientY;
+        }, { passive: true });
+
+        viewport.addEventListener('touchend', (event) => {
+          const touch = event.changedTouches[0];
+          const dx = touch.clientX - startX;
+          const dy = touch.clientY - startY;
+
+          if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+            if (dx < 0) this.next();
+            if (dx > 0) this.prev();
+          }
+        }, { passive: true });
+      }
+
+      setupWheelNav() {
+        window.addEventListener('wheel', (event) => {
+          if (this.wheelLocked) return;
+          if (Math.abs(event.deltaY) < 22) return;
+
+          this.wheelLocked = true;
+          if (event.deltaY > 0) this.next();
+          if (event.deltaY < 0) this.prev();
+
+          setTimeout(() => {
+            this.wheelLocked = false;
+          }, 520);
+        }, { passive: true });
+      }
+
+      setupButtons() {
+        document.getElementById('prevBtn').addEventListener('click', () => this.prev());
+        document.getElementById('nextBtn').addEventListener('click', () => this.next());
+      }
+
+      prev() {
+        this.showSlide(this.currentSlide - 1);
+      }
+
+      next() {
+        this.showSlide(this.currentSlide + 1);
+      }
+
+      showSlide(index, animate = true) {
+        const nextIndex = Math.max(0, Math.min(index, this.totalSlides - 1));
+        this.currentSlide = nextIndex;
+
+        this.slides.forEach((slide, i) => {
+          const active = i === nextIndex;
+          slide.classList.toggle('active', active);
+          slide.classList.toggle('visible', active);
+        });
+
+        const current = this.slides[nextIndex];
+        if (animate) this.playReveal(current);
+        this.updateCounter();
+      }
+
+      playReveal(slide) {
+        const nodes = Array.from(slide.querySelectorAll('.reveal, .reveal-left, .reveal-scale'));
+        nodes.forEach((node) => {
+          node.style.transitionDelay = '0ms';
+        });
+
+        requestAnimationFrame(() => {
+          nodes.forEach((node, idx) => {
+            node.style.transitionDelay = `${Math.min(idx * 70, 560)}ms`;
+          });
+        });
+      }
+
+      updateCounter() {
+        const current = String(this.currentSlide + 1).padStart(2, '0');
+        const total = String(this.totalSlides).padStart(2, '0');
+        this.counterEl.textContent = `${current} / ${total}`;
+        this.progressEl.style.width = `${((this.currentSlide + 1) / this.totalSlides) * 100}%`;
+      }
+    }
+
+    /* === INLINE EDITOR === */
+    class InlineEditor {
+      constructor() {
+        this.isActive = false;
+        this.storageKey = `frontend-slides-${window.location.pathname}-edits`;
+        this.toast = document.getElementById('editToast');
+        this.toggleBtn = document.getElementById('editToggle');
+        this.hotzone = document.querySelector('.edit-hotzone');
+        this.hideTimeout = null;
+
+        this.targets = this.collectTargets();
+        this.loadState();
+        this.bind();
+      }
+
+      collectTargets() {
+        const selector = [
+          '.slide h1', '.slide h2', '.slide h3', '.slide p', '.slide li',
+          '.slide .chip', '.slide .badge', '.slide .cell', '.slide .panel-title',
+          '.slide .kpi-value', '.slide .kpi-label', '.slide .kpi-note',
+          '.slide .flow-step .name', '.slide .flow-step .desc', '.slide .timeline-item .event', '.slide .timeline-item .detail'
+        ].join(',');
+
+        return Array.from(document.querySelectorAll(selector));
+      }
+
+      bind() {
+        this.toggleBtn.addEventListener('click', () => this.toggleEditMode());
+
+        this.hotzone.addEventListener('mouseenter', () => {
+          clearTimeout(this.hideTimeout);
+          this.toggleBtn.classList.add('show');
+        });
+
+        this.hotzone.addEventListener('mouseleave', () => {
+          this.hideTimeout = setTimeout(() => {
+            if (!this.isActive) this.toggleBtn.classList.remove('show');
+          }, 400);
+        });
+
+        this.toggleBtn.addEventListener('mouseenter', () => {
+          clearTimeout(this.hideTimeout);
+        });
+
+        this.toggleBtn.addEventListener('mouseleave', () => {
+          this.hideTimeout = setTimeout(() => {
+            if (!this.isActive) this.toggleBtn.classList.remove('show');
+          }, 400);
+        });
+
+        this.hotzone.addEventListener('click', () => this.toggleEditMode());
+
+        document.addEventListener('keydown', (event) => {
+          const target = event.target;
+          const editingText = target && target.getAttribute && target.getAttribute('contenteditable') === 'true';
+
+          if ((event.key === 'e' || event.key === 'E') && !editingText) {
+            event.preventDefault();
+            this.toggleEditMode();
+          }
+
+          if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+            event.preventDefault();
+            this.saveState();
+            this.downloadHtml();
+          }
+        });
+      }
+
+      toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('edit-mode', this.isActive);
+        this.toggleBtn.classList.toggle('active', this.isActive);
+        this.toggleBtn.classList.add('show');
+
+        this.targets.forEach((target) => {
+          if (this.isActive) {
+            target.setAttribute('contenteditable', 'true');
+            target.setAttribute('spellcheck', 'false');
+            target.addEventListener('input', this.debouncedSave);
+          } else {
+            target.removeAttribute('contenteditable');
+            target.removeAttribute('spellcheck');
+          }
+        });
+
+        if (!this.isActive) {
+          this.saveState();
+        }
+
+        this.showToast(this.isActive ? 'Edit mode on' : 'Edit mode off');
+      }
+
+      debouncedSave = () => {
+        clearTimeout(this.saveTimer);
+        this.saveTimer = setTimeout(() => this.saveState(false), 320);
+      };
+
+      saveState(showToast = true) {
+        const payload = this.targets.map((el) => el.innerHTML);
+        localStorage.setItem(this.storageKey, JSON.stringify(payload));
+        if (showToast) this.showToast('Saved locally');
+      }
+
+      loadState() {
+        const raw = localStorage.getItem(this.storageKey);
+        if (!raw) return;
+
+        try {
+          const payload = JSON.parse(raw);
+          payload.forEach((html, idx) => {
+            if (this.targets[idx] && typeof html === 'string') {
+              this.targets[idx].innerHTML = html;
+            }
+          });
+          this.showToast('Loaded local edits');
+        } catch {
+          this.showToast('Load failed');
+        }
+      }
+
+      downloadHtml() {
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll('[contenteditable="true"]').forEach((el) => {
+          el.removeAttribute('contenteditable');
+          el.removeAttribute('spellcheck');
+        });
+
+        clone.querySelectorAll('.edit-toggle').forEach((el) => {
+          el.classList.remove('show');
+          el.classList.remove('active');
+        });
+
+        const blob = new Blob(['<!doctype html>\n' + clone.outerHTML], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `vibe-coding-slides-${document.body.className.replace('theme-', '')}.html`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        this.showToast('Downloaded HTML');
+      }
+
+      showToast(message) {
+        this.toast.textContent = message;
+        this.toast.classList.add('show');
+        clearTimeout(this.toastTimer);
+        this.toastTimer = setTimeout(() => {
+          this.toast.classList.remove('show');
+        }, 1200);
+      }
+    }
+
+    const presentation = new SlidePresentation();
+    const editor = new InlineEditor();
+  </script>
+</body>
+</html>
