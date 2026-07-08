@@ -1,3 +1,6 @@
 [submodule "references/design-doc-mermaid"]
 	path = references/design-doc-mermaid
 	url = https://github.com/SpillwaveSolutions/design-doc-mermaid
+[submodule "references/auto-mermaid-diagram-skill"]
+	path = references/auto-mermaid-diagram-skill
+	url = https://github.com/maverickgao8848/auto-mermaid-diagram-skill
