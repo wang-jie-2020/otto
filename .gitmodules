@@ -25,3 +25,12 @@
 [submodule "references/taste-skill"]
 	path = references/taste-skill
 	url = https://github.com/Leonxlnx/taste-skill
+[submodule "references/wechat-article-publisher-skill"]
+	path = references/wechat-article-publisher-skill
+	url = https://github.com/pengcong2020520/wechat-article-publisher-skill.git
+[submodule "references/anthropics-skills"]
+	path = references/anthropics-skills
+	url = https://github.com/anthropics/skills
+[submodule "references/agnes-ai-generation-skill"]
+	path = references/agnes-ai-generation-skill
+	url = https://github.com/Yacey/agnes-ai-generation-skill.git

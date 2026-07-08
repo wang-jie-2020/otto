@@ -8,7 +8,9 @@
 
 1. https://github.com/affaan-m/everything-claude-code
 2. https://github.com/Yeachan-Heo/oh-my-claudecode
-3. https://github.com/anthropics/skills                
+3. https://github.com/anthropics/skills    
+4. https://github.com/github/awesome-copilot.git
+5. https://github.com/shanraisshan/claude-code-best-practice.git
 
 ### mermaid
 1. https://github.com/SpillwaveSolutions/design-doc-mermaid        --> mermaid-diagrm
@@ -32,4 +34,4 @@
 
 ### 其他
 1. https://github.com/pengcong2020520/wechat-article-publisher-skill.git --> 引申阅读https://github.com/caol64/wenyan
-
+2. https://github.com/Yacey/agnes-ai-generation-skill.git
