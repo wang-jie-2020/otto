@@ -19,3 +19,9 @@
 [submodule "references/slide-craft-skill"]
 	path = references/slide-craft-skill
 	url = https://github.com/maverickgao8848/slide-craft-skill.git
+[submodule "references/garden-skills"]
+	path = references/garden-skills
+	url = https://github.com/ConardLi/garden-skills.git
+[submodule "references/taste-skill"]
+	path = references/taste-skill
+	url = https://github.com/Leonxlnx/taste-skill

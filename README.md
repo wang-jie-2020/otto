@@ -25,13 +25,11 @@
 3. https://github.com/ConardLi/garden-skills.git
 4. https://github.com/Leonxlnx/taste-skill
 
+### npx
+1. https://github.com/pbakaus/impeccable
+2. https://github.com/heygen-com/hyperframes
+3. https://github.com/greensock/GSAP
 
+### 其他
+1. https://github.com/pengcong2020520/wechat-article-publisher-skill.git --> 引申阅读https://github.com/caol64/wenyan
 
-
-
-10. https://github.com/pbakaus/impeccable
-11. https://github.com/pengcong2020520/generate-wechat-theme-skill.git
-12. https://github.com/caol64/wenyan
-
-7. https://github.com/heygen-com/hyperframes
-8. https://github.com/greensock/GSAP
