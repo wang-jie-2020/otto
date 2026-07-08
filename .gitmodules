@@ -1,0 +1,3 @@
+[submodule "references/design-doc-mermaid"]
+	path = references/design-doc-mermaid
+	url = https://github.com/SpillwaveSolutions/design-doc-mermaid
