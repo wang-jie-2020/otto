@@ -8,15 +8,18 @@
 
 1. https://github.com/affaan-m/everything-claude-code
 2. https://github.com/Yeachan-Heo/oh-my-claudecode
-3. https://github.com/anthropics/skills
+3. https://github.com/anthropics/skills                
 
-### 
+### mermaid
 1. https://github.com/SpillwaveSolutions/design-doc-mermaid        --> mermaid-diagrm
 2. https://github.com/maverickgao8848/auto-mermaid-diagram-skill   --> mermaid-diagrm-auto
+
+### workflow
 3. https://github.com/obra/superpowers
 4. https://github.com/mattpocock/skills
 5. https://github.com/addyosmani/agent-skills
 
+### design
 
 
 9. https://github.com/Leonxlnx/taste-skill

@@ -10,3 +10,6 @@
 [submodule "references/mattpocock"]
 	path = references/mattpocock
 	url = https://github.com/mattpocock/skills
+[submodule "references/agent-skills"]
+	path = references/agent-skills
+	url = https://github.com/addyosmani/agent-skills
