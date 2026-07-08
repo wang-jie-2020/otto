@@ -4,3 +4,9 @@
 [submodule "references/auto-mermaid-diagram-skill"]
 	path = references/auto-mermaid-diagram-skill
 	url = https://github.com/maverickgao8848/auto-mermaid-diagram-skill
+[submodule "references/superpowers"]
+	path = references/superpowers
+	url = https://github.com/obra/superpowers
+[submodule "references/mattpocock"]
+	path = references/mattpocock
+	url = https://github.com/mattpocock/skills
