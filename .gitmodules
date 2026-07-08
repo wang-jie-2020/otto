@@ -13,3 +13,9 @@
 [submodule "references/agent-skills"]
 	path = references/agent-skills
 	url = https://github.com/addyosmani/agent-skills
+[submodule "references/frontend-slides"]
+	path = references/frontend-slides
+	url = https://github.com/zarazhangrui/frontend-slides.git
+[submodule "references/slide-craft-skill"]
+	path = references/slide-craft-skill
+	url = https://github.com/maverickgao8848/slide-craft-skill.git

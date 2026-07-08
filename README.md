@@ -15,17 +15,17 @@
 2. https://github.com/maverickgao8848/auto-mermaid-diagram-skill   --> mermaid-diagrm-auto
 
 ### workflow
-3. https://github.com/obra/superpowers
-4. https://github.com/mattpocock/skills
-5. https://github.com/addyosmani/agent-skills
+1. https://github.com/obra/superpowers
+2. https://github.com/mattpocock/skills
+3. https://github.com/addyosmani/agent-skills
 
 ### design
+1. https://github.com/zarazhangrui/frontend-slides.git
+2. https://github.com/maverickgao8848/slide-craft-skill.git
+3. https://github.com/ConardLi/garden-skills.git
+4. https://github.com/Leonxlnx/taste-skill
 
 
-9. https://github.com/Leonxlnx/taste-skill
-13. https://github.com/zarazhangrui/frontend-slides.git
-14. https://github.com/maverickgao8848/slide-craft-skill.git
-15. https://github.com/ConardLi/garden-skills.git
 
 
 
