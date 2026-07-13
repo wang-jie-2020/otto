@@ -25,7 +25,7 @@
 1. https://github.com/zarazhangrui/frontend-slides.git
 2. https://github.com/maverickgao8848/slide-craft-skill.git
 3. https://github.com/ConardLi/garden-skills.git
-4. https://github.com/Leonxlnx/taste-skill
+4. https://github.com/Leonxlnx/taste-skill      --> fronted-taste(taste-skill)
 
 ### npx
 1. https://github.com/pbakaus/impeccable
