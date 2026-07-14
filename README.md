@@ -11,6 +11,7 @@
 3. https://github.com/anthropics/skills    
 4. https://github.com/github/awesome-copilot.git
 5. https://github.com/shanraisshan/claude-code-best-practice.git
+6. https://github.com/deanpeters/Product-Manager-Skills
 
 ### mermaid
 1. https://github.com/SpillwaveSolutions/design-doc-mermaid        --> mermaid-diagrm
