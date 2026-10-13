@@ -34,3 +34,6 @@
 [submodule "references/agnes-ai-generation-skill"]
 	path = references/agnes-ai-generation-skill
 	url = https://github.com/Yacey/agnes-ai-generation-skill.git
+[submodule "references/archify"]
+	path = references/archify
+	url = https://github.com/tt-a1i/archify.git
